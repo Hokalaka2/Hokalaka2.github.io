@@ -175,9 +175,10 @@ background-size: cover;
 
 
 
-<p>#Abstract In this blog posts, I delve into some of the factors that we can use to predict species in the palmer penguins dataset. I used SelectKBest and going through all combinations to select my columns that I’d use to try to predict species. Although both SelectKBest and combinations method got similar levels of accuracy, they selected slightly different columns. Finally, I visualize my model to showcase how future data predictions would look.</p>
+<p><strong>Palmer Penguins Blog Post</strong></p>
+<p><strong>Abstract</strong> In this blog posts, I delve into some of the factors that we can use to predict species in the palmer penguins dataset. I used SelectKBest and going through all combinations to select my columns that I’d use to try to predict species. Although both SelectKBest and combinations method got similar levels of accuracy, they selected slightly different columns. Finally, I visualize my model to showcase how future data predictions would look.</p>
 <p>##Importing Palmer Penguins Data Set</p>
-<div id="cell-2" class="cell" data-execution_count="2">
+<div id="cell-3" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>train_url <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/PhilChodrow/ml-notes/main/data/palmer-penguins/train.csv"</span></span>
@@ -318,7 +319,7 @@ background-size: cover;
 </div>
 </div>
 <p>Here I am prepareing the data by dropping columns that don’t makes sense to train on or are constant for the data set. I also convert columns like Island into boolean columns using pandas getDummies.</p>
-<div id="cell-4" class="cell" data-execution_count="3">
+<div id="cell-5" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> LabelEncoder</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>le <span class="op">=</span> LabelEncoder()</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>le.fit(train[<span class="st">"Species"</span>])</span>
@@ -446,7 +447,7 @@ background-size: cover;
 </div>
 </div>
 <p>Here we can see what the new data looks like</p>
-<div id="cell-6" class="cell" data-execution_count="4">
+<div id="cell-7" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>X_train.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div>
@@ -559,7 +560,7 @@ background-size: cover;
 </div>
 </div>
 <p>This plot looks at the qualitative column “Island” and visualizes it to see if there would possibly be any trends that could be helpful. From the plot, we see that Chinstrap penguins are exclusively found on Dream, while Gentoo penguins are exclusively found on Biscoe Island.</p>
-<div id="cell-8" class="cell" data-execution_count="27">
+<div id="cell-9" class="cell" data-execution_count="27">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot <span class="im">as</span> plt</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -575,7 +576,7 @@ background-size: cover;
 </div>
 </div>
 <p>My second graph visualizes Culment Length vs Flipper Length to see if there’s a correlation between the two and species. We see that Adelie penguins tend to have small culmen lengths and flippper lengths. Gentoo penguins, on the other hand, tend to have medium to large culmen lengths and long flipper lengths. Lastly, Chinstrap penguins tend to have long culmen lengths and medium to small flipper lengths.</p>
-<div id="cell-10" class="cell" data-execution_count="30">
+<div id="cell-11" class="cell" data-execution_count="30">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize <span class="op">=</span> (<span class="dv">8</span>, <span class="fl">3.5</span>))</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>p1 <span class="op">=</span> sns.scatterplot(train, x <span class="op">=</span> <span class="st">"Culmen Length (mm)"</span>, y <span class="op">=</span> <span class="st">"Flipper Length (mm)"</span>, ax <span class="op">=</span> ax[<span class="dv">0</span>], color <span class="op">=</span> <span class="st">"darkgrey"</span>)</span>
@@ -589,7 +590,7 @@ background-size: cover;
 </div>
 </div>
 <p>To select my features I try two different methods: SelectKBest and trying all possible combinations. Below we see my Select K Best implementation.</p>
-<div id="cell-12" class="cell" data-execution_count="5">
+<div id="cell-13" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_selection <span class="im">import</span> SelectKBest</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_selection <span class="im">import</span> f_classif, chi2</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -603,13 +604,13 @@ background-size: cover;
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>X_qual_selected <span class="op">=</span> select_K_best(X_train[[<span class="st">"Island_Biscoe"</span>, <span class="st">"Island_Dream"</span>, <span class="st">"Island_Torgersen"</span>, <span class="st">"Clutch Completion_No"</span>, <span class="st">"Clutch Completion_Yes"</span>, <span class="st">"Sex_FEMALE"</span>, <span class="st">"Sex_MALE"</span>]], y_train, chi2, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-13" class="cell" data-execution_count="6">
+<div id="cell-14" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>X_quant_selected</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <pre><code>array(['Culmen Length (mm)', 'Flipper Length (mm)'], dtype=object)</code></pre>
 </div>
 </div>
-<div id="cell-14" class="cell" data-execution_count="7">
+<div id="cell-15" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>X_qual_selected <span class="op">=</span> [col <span class="cf">for</span> col <span class="kw">in</span> X_train.columns <span class="cf">if</span> X_qual_selected[<span class="dv">0</span>][<span class="dv">0</span>:<span class="dv">4</span>] <span class="kw">in</span> col]</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>X_qual_selected</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
@@ -617,7 +618,7 @@ background-size: cover;
 </div>
 </div>
 <p>Here we see all the rows selected in through SelectKBest</p>
-<div id="cell-16" class="cell" data-execution_count="8">
+<div id="cell-17" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>selectK_cols <span class="op">=</span> X_quant_selected.tolist() <span class="op">+</span> X_qual_selected</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>selectK_cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
@@ -629,7 +630,7 @@ background-size: cover;
 </div>
 </div>
 <p>I also implemented running through all combinations and calculating accuracy based on a random forrest algorithm. This method is significantly more time consuming than select k best but should return the most optimal columns.</p>
-<div id="cell-18" class="cell" data-execution_count="61">
+<div id="cell-19" class="cell" data-execution_count="61">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> itertools <span class="im">import</span> combinations</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_score</span>
@@ -663,7 +664,7 @@ background-size: cover;
 </div>
 </div>
 <p>To determine which algorithm to use, I test both possibility using cross val scores.</p>
-<div id="cell-20" class="cell" data-execution_count="62">
+<div id="cell-21" class="cell" data-execution_count="62">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>select_clf <span class="op">=</span> RandomForestClassifier(n_estimators<span class="op">=</span><span class="dv">40</span>, random_state<span class="op">=</span><span class="dv">40</span>, max_depth<span class="op">=</span><span class="dv">5</span>)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>select_clf.fit(X_train[selectK_cols], y_train)</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>select_score_clf <span class="op">=</span> cross_val_score(select_clf, X_train[selectK_cols], y_train, cv<span class="op">=</span><span class="dv">5</span>)</span>
@@ -672,10 +673,10 @@ background-size: cover;
 <pre><code>0.9804675716440423</code></pre>
 </div>
 </div>
-<div id="cell-21" class="cell" data-execution_count="63">
+<div id="cell-22" class="cell" data-execution_count="63">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>comb_clf <span class="op">=</span> RandomForestClassifier(n_estimators<span class="op">=</span><span class="dv">40</span>, random_state<span class="op">=</span><span class="dv">40</span>, max_depth<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-22" class="cell" data-execution_count="64">
+<div id="cell-23" class="cell" data-execution_count="64">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>comb_clf.fit(X_train[comb_cols], y_train)</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>comb_score_clf <span class="op">=</span> cross_val_score(comb_clf, X_train[comb_cols], y_train, cv<span class="op">=</span><span class="dv">5</span>)</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>comb_score_clf.mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -684,7 +685,7 @@ background-size: cover;
 </div>
 </div>
 <p>While the scores were similar, I decided to use the comb_clf.</p>
-<div id="cell-24" class="cell" data-execution_count="72">
+<div id="cell-25" class="cell" data-execution_count="72">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>test_url <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/PhilChodrow/ml-notes/main/data/palmer-penguins/test.csv"</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>test <span class="op">=</span> pd.read_csv(test_url)</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -695,7 +696,7 @@ background-size: cover;
 </div>
 </div>
 <p>Yay! As we can see we achieved a score of 100%.</p>
-<div id="cell-26" class="cell" data-execution_count="66">
+<div id="cell-27" class="cell" data-execution_count="66">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot <span class="im">as</span> plt</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.patches <span class="im">import</span> Patch</span>
@@ -750,7 +751,7 @@ background-size: cover;
 <span id="cb22-52"><a href="#cb22-52" aria-hidden="true" tabindex="-1"></a>      </span>
 <span id="cb22-53"><a href="#cb22-53" aria-hidden="true" tabindex="-1"></a>      plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-27" class="cell" data-execution_count="67">
+<div id="cell-28" class="cell" data-execution_count="67">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>plot_regions(comb_clf, X_train[comb_cols], y_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -760,7 +761,7 @@ background-size: cover;
 </div>
 </div>
 </div>
-<div id="cell-28" class="cell" data-execution_count="68">
+<div id="cell-29" class="cell" data-execution_count="68">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>plot_regions(comb_clf, X_test[comb_cols], y_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -771,7 +772,7 @@ background-size: cover;
 </div>
 </div>
 <p>Since the result has 100% accuracy, the confusion matrix won’t show much for the test set.</p>
-<div id="cell-30" class="cell" data-execution_count="74">
+<div id="cell-31" class="cell" data-execution_count="74">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> confusion_matrix</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>y_test_pred <span class="op">=</span> comb_clf.predict(X_test[comb_cols])</span>
