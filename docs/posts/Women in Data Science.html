@@ -6,8 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Otis Milliken">
+<meta name="dcterms.date" content="2024-03-04">
+<meta name="description" content="Blog Post for CS0451">
 
-<title>My Awesome CSCI 0451 Blog</title>
+<title>My Awesome CSCI 0451 Blog - Women in Data Science Blog Post</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,24 +26,22 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -68,35 +69,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-author','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 <style>
 
       .quarto-title-block .quarto-title-banner h1,
@@ -111,52 +83,23 @@ ul.task-list li input[type="checkbox"] {
 
       .quarto-title-block .quarto-title-banner {
         color: white;
-background-image: url(img/landscape.png);
+background-image: url(../img/landscape.png);
 background-size: cover;
       }
 </style>
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-fixed">
+<body class="nav-fixed fullcontent">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">My Awesome CSCI 0451 Blog</span>
     </a>
   </div>
@@ -167,7 +110,7 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item compact">
@@ -190,128 +133,102 @@ window.Quarto = {
 <!-- content -->
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-page-left">
-      <h1 class="title">My Awesome CSCI 0451 Blog</h1>
-                      </div>
+    <div class="quarto-title column-body">
+      <h1 class="title">Women in Data Science Blog Post</h1>
+                  <div>
+        <div class="description">
+          Blog Post for CS0451
+        </div>
+      </div>
+                </div>
   </div>
     
   
-  <div class="quarto-title-meta column-page-left">
+  <div class="quarto-title-meta">
 
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Otis Milliken </p>
+            </div>
+    </div>
       
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">March 4, 2024</p>
+      </div>
+    </div>
     
       
     </div>
     
   
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(3)</span></div></div></div>
+    
 <!-- main -->
-<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
 
 
+<section id="womens-in-data-science-blog-post" class="level1">
+<h1>Women’s in Data Science Blog Post</h1>
+</section>
+<section id="abstract" class="level1">
+<h1>Abstract</h1>
+</section>
+<section id="reading-questions" class="level1">
+<h1>Reading Questions</h1>
+<p>Why is it a problem that women are underrepresented in computing, math, and engineering? For whom is it a problem?</p>
+<p>It seems that the underrepresentation of women in these fields also hurt men. One finding from India found that male leaders held less implicit bias when they had female leadership alongside them (Beaman et al., 2009).</p>
+<p>How is the representation and status of women in computing today different from the 1950s and 1960s? What are some of the forces that brought on this change?</p>
+<p>During World War 2, we actually saw a majority of women in the computing industry. This declined drastically after the war but in 1950s and 1960s the number of women in computing was similar to what it is today (around 26%). The percentaged reached a peak in the 1990s with around 35% of the computing workforce being women. Computing during the 1950s and 1960s was largely seen as an administrative extension and thereby women were encouraged to participate in large numbers. The decline after the 1990s is often attributed to the rise of personal computers which were seen as new toys for boys and the growing interest in the area. This early experience gave them an advantage as the computing market expanded.</p>
+<p>Which of the barriers and unequal challenges described in the section “Why So Few?” can be eroded by events that spotlight the achievement of women in STEM?</p>
+<p>Having spotlight on women in the industry is an important step to reducing stigma and feelings of isolation while also giving role models for women in computer science. A third of women in private-sector technical jobs feel extremeley isolated at work and four out of ten female engineers reported a lack of role models. The book mentions how seeing other women in leadership roles can actually help women from the harmful effect of stereotyping effect (Van Loo &amp; Rydell, 2014). These effects have a cascade effect as increase in female representation leads to more representation which further reduces feelings of isolation and increases representation.</p>
+<p>These talks also begin the process of building social networks which has predominantly been dominated by men. The book highlights how research has identified that these male-dominated social networks exclude women (Faulkner, 2009a). Having women talk about their professional experiences and connect with students begins the process of opening up the network to women.</p>
+</section>
+<section id="first-lightning-talk" class="level1">
+<h1>First Lightning Talk</h1>
+<p>Amy Yuen’s talk discussed whether the United Nation Security Council is truly a Democratic Institution. On the onset, the voting rules seems to inherently favor the powerful since certain members are given veto powers. Why do other countries then spend significant resources and money on running for seats on the Security Council even if they have significantly less power? The talk analysis two different ways to look at democratic institutions: Institutional Rules which contains the voting inside the council and serving on the council; and Representation which looks at which issues are discussed and what the participation level of the non-permanent members are. The overall findings were that while the security council institutional rules aren’t very democratic, it is fairly representative and inclusive. From the talk, I learned about how one can use data for issues that are not necessarily data oriented. I wouldn’t at first think to use data analysis to come to a conclusion about the level of democracy of an institution since it feels more vague than other issues but now I do think it can be very useful to back up ones claims.</p>
+</section>
+<section id="second-lightning-talk-jessica-lroe" class="level1">
+<h1>Second Lightning Talk Jessica L’Roe</h1>
+<p>Jessica L’Roe’s talk was more a cursery overview of some of the projects that she has worked on.</p>
+<p>In College, only had one woman professor. Grew up in North Carolina and had to constantly fight expectations</p>
+<p>Work She’s Done:</p>
+<p>Land Registration in Brazil Registering people’s land to help prove culpability for deforestation</p>
+<p>Formalizing Gold Mining in Peru</p>
+<p>Landscape Changes around Kibale National Park, Uganda Who is planting tree and why are they planting trees. Lots owned by non local people Lots analysis in Uganda. Mother’s investing in education instead of land.</p>
+<p>Women are not a rarity in the field anymore. Should go for it if you can.</p>
+</section>
+<section id="third-lightning-talk" class="level1">
+<h1>Third Lightning Talk</h1>
+</section>
+<section id="keynote" class="level1">
+<h1>Keynote</h1>
+<p>CS + Stats + Domain Expertise Data Science is the Intersection of all three</p>
+<p>Many of different domain expertise</p>
+<p>Social Studies taught me: Skill: Use Context to understand Primary Sources which will turn into Use Context to understand Data</p>
+<p>Instead of using only regression loss score. Also use a classification score - Showed many fewer patients in the control group score higher than the PTSD group - Context was necessary to come up with this technique</p>
+<p>Discipline isn’t purely a topic but also a discourse. “Disciplines are communities”.</p>
+<p>Computer Scientist often used computer science research methods on humans. However these often are flawed. Need people from a variety of fields. - One example, frame questions with similar levels of abstraction.</p>
+<p>Fairness Check before Data Scientist even fit the model. - How to make objective fairness check?</p>
+<p>Data Collection and Model doesn’t have to be biased However the World is inherently biased which means we have to think about larger bias.</p>
+<p>Different answers to whether we can make fair algorithms - If you accept to lose accuracy, you can improve fairness - Some people just think it isn’t possible and should be tried - Still progress to made</p>
+<p>Choice of target variable (proxy for what we trying to predict) matters a lot</p>
+<p>Laws don’t move as fast as code because they need to be socially discussed. Code move super fast.</p>
+</section>
+<section id="notes" class="level1">
+<h1>Notes</h1>
 
 
+</section>
 
-
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-listing-date-sort="1709528400000" data-listing-file-modified-sort="1710514779718" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="926">
-<div class="thumbnail">
-<p><a href="./posts/Women in Data Science.html" class="no-external"></a></p><a href="./posts/Women in Data Science.html" class="no-external">
-<div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
-</a><p><a href="./posts/Women in Data Science.html" class="no-external"></a></p>
-</div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/Women in Data Science.html" class="no-external">Women in Data Science Blog Post</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/Women in Data Science.html" class="no-external"></a>
-</div>
-<div class="listing-description">
-<a href="./posts/Women in Data Science.html" class="no-external">Blog Post for CS0451</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/Women in Data Science.html" class="no-external">
-<div class="listing-date">
-Mar 4, 2024
-</div>
-<div class="listing-author">
-Otis Milliken
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="1" data-listing-date-sort="1709442000000" data-listing-file-modified-sort="1711473650519" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="359">
-<div class="thumbnail">
-<p><a href="./posts/Replication Study.html" class="no-external"></a></p><a href="./posts/Replication Study.html" class="no-external">
-<p class="card-img-top"><img src="posts/Replication Study_files/figure-html/cell-3-output-1.png"  class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/Replication Study.html" class="no-external"></a></p>
-</div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/Replication Study.html" class="no-external">Replication Study</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/Replication Study.html" class="no-external"></a>
-</div>
-<div class="listing-description">
-<a href="./posts/Replication Study.html" class="no-external">Blog Post for CS0451</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/Replication Study.html" class="no-external">
-<div class="listing-date">
-Mar 3, 2024
-</div>
-<div class="listing-author">
-Otis Milliken
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="2" data-listing-date-sort="1708405200000" data-listing-file-modified-sort="1708916246627" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="785">
-<div class="thumbnail">
-<p><a href="./posts/penguin_blog.html" class="no-external"></a></p><a href="./posts/penguin_blog.html" class="no-external">
-<p class="card-img-top"><img src="posts/penguin_blog_files/figure-html/cell-6-output-1.png"  class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/penguin_blog.html" class="no-external"></a></p>
-</div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/penguin_blog.html" class="no-external">Palmer Penguins Blog Post</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/penguin_blog.html" class="no-external"></a>
-</div>
-<div class="listing-description">
-<a href="./posts/penguin_blog.html" class="no-external">Blog Post for the First Assignment in CS0451</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/penguin_blog.html" class="no-external">
-<div class="listing-date">
-Feb 20, 2024
-</div>
-<div class="listing-author">
-Otis Milliken
-</div>
-</a>
-</div>
-</div>
-</div>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
