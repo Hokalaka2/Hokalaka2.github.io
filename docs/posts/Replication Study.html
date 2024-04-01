@@ -60,7 +60,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -121,6 +121,9 @@ background-image: url(../img/landscape.png);
 background-size: cover;
       }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <link rel="stylesheet" href="../styles.css">
@@ -211,14 +214,16 @@ background-size: cover;
 
 <section id="abstract" class="level1">
 <h1>Abstract</h1>
-<p>In this blog post, I followed along with the study by Obermeyer, Ziad, Brian Powers, Christine Vogeli, and Sendhil Mullainathan (2019) called “Dissecting Racial Bias in an Algorithm Used to Manage the Health of Populations.” Essentially this blog posts steps through their methodology to understand how they got to the conclusions that they did. I found that there existed a black and white patient divide in the correlation between the mean number of chronic illness and risk percentile. I also found that there existed a disportionate cost of black patients compared to white patients.</p>
-<div id="cell-3" class="cell" data-execution_count="190">
+<p>In this blog post, I followed along with the study by Obermeyer, Ziad, Brian Powers, Christine Vogeli, and Sendhil Mullainathan (2019) called “Dissecting Racial Bias in an Algorithm Used to Manage the Health of Populations.” This blog posts steps through their methodology to understand how they got to the conclusions that they did. I found that there existed a black and white patient divide in the correlation between the mean number of chronic illness and risk percentile. However, I didn’t find that figure 3 shows a significant different as between black and white patients as people with over 5 chronic illnesses blurs teh picture. I also found that there existed a disportionate cost of black patients compared to white patients.</p>
+<div id="cell-3" class="cell" data-execution_count="103">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">"https://gitlab.com/labsysmed/dissecting-bias/-/raw/master/data/data_new.csv?inline=false"</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(url)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"risk_percentile"</span>] <span class="op">=</span> (df[<span class="st">"risk_score_t"</span>].rank(pct<span class="op">=</span><span class="va">True</span>) <span class="op">*</span> <span class="dv">100</span>).<span class="bu">round</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-4" class="cell" data-execution_count="191">
+<section id="figure-1" class="level2">
+<h2 class="anchored" data-anchor-id="figure-1">Figure 1</h2>
+<div id="cell-5" class="cell" data-execution_count="104">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot <span class="im">as</span> plt</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -236,116 +241,137 @@ background-size: cover;
 </div>
 </div>
 </div>
-<section id="explaining-chart" class="level2">
-<h2 class="anchored" data-anchor-id="explaining-chart">Explaining Chart</h2>
+</section>
+<section id="explaining-fig-1" class="level2">
+<h2 class="anchored" data-anchor-id="explaining-fig-1">Explaining Fig 1</h2>
 <p>The chart shows the White patients on average have to have less chronic illnesses to have higher risk. This means that white patients are more likely to be referred to treatment (high risk treatment) than black patients. For example, a white patient with a risk percentile of 60 needs on average around 1.1 chronic illnesses while a black patient would need to have around 1.8-1.9 chronic illness to be in that same risk percentile.</p>
-<div id="cell-6" class="cell" data-execution_count="260">
+</section>
+<section id="figure-3" class="level2">
+<h2 class="anchored" data-anchor-id="figure-3">Figure 3</h2>
+<div id="cell-8" class="cell" data-execution_count="105">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>chart2 <span class="op">=</span> df.groupby([<span class="st">"risk_percentile"</span>, <span class="st">"race"</span>]).aggregate({<span class="st">"cost_t"</span> : <span class="st">"mean"</span>}).reset_index()</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize <span class="op">=</span> (<span class="dv">8</span>, <span class="fl">3.5</span>))</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(data<span class="op">=</span>chart2, x<span class="op">=</span><span class="st">"risk_percentile"</span>, y<span class="op">=</span><span class="st">"cost_t"</span>, hue<span class="op">=</span><span class="st">"race"</span>, ax<span class="op">=</span>ax[<span class="dv">0</span>])</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].<span class="bu">set</span>(xlabel <span class="op">=</span><span class="st">"Percentile Risk"</span>, ylabel <span class="op">=</span> <span class="st">"Medical Cost"</span>, yscale<span class="op">=</span><span class="st">"log"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].<span class="bu">set</span>(xlabel <span class="op">=</span><span class="st">"Percentile Risk Score"</span>, ylabel <span class="op">=</span> <span class="st">"Medical Cost"</span>, yscale<span class="op">=</span><span class="st">"log"</span>)</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>chart3 <span class="op">=</span> df.groupby([<span class="st">"race"</span>, <span class="st">"gagne_sum_t"</span>]).aggregate({<span class="st">"cost_t"</span> : <span class="st">"mean"</span>}).reset_index()</span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(data<span class="op">=</span>chart3, x<span class="op">=</span><span class="st">"gagne_sum_t"</span>, y<span class="op">=</span><span class="st">"cost_t"</span>, hue<span class="op">=</span><span class="st">"race"</span>, ax<span class="op">=</span>ax[<span class="dv">1</span>])</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].<span class="bu">set</span>(xlabel <span class="op">=</span><span class="st">"Chronic Of Illnesses"</span>, ylabel <span class="op">=</span> <span class="st">"Medical Cost"</span>, yscale<span class="op">=</span><span class="st">"log"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].<span class="bu">set</span>(xlabel <span class="op">=</span><span class="st">"Number of Chronic Of Illnesses"</span>, ylabel <span class="op">=</span> <span class="st">"Medical Cost"</span>, yscale<span class="op">=</span><span class="st">"log"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="105">
+<pre><code>[Text(0.5, 0, 'Number of Chronic Of Illnesses'),
+ Text(0, 0.5, 'Medical Cost'),
+ None]</code></pre>
+</div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Replication Study_files/figure-html/cell-4-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="Replication Study_files/figure-html/cell-4-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<section id="figure-3" class="level3">
-<h3 class="anchored" data-anchor-id="figure-3">Figure 3</h3>
+<section id="explaining-figure-3" class="level3">
+<h3 class="anchored" data-anchor-id="explaining-figure-3">Explaining Figure 3</h3>
 <p>The paper argues that there is little difference in cost based on percentile risk shown in Figure 1 but that black patients tend to have lower costs for the number of chronic illnesses they have. I’m not sure the tables I created totally supports that hypothesis as both seem to have small differences between them. For example, between 7 and 14 chronic illnesses, it looks like black patients actually cost more than white patients. This could be because there’s not very many patients with over 5 chronic illnesses.</p>
-<div id="cell-8" class="cell" data-execution_count="193">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fiveOrLess <span class="op">=</span> <span class="dv">1</span> <span class="op">*</span> (df[<span class="st">"gagne_sum_t"</span>] <span class="op">&lt;</span> <span class="dv">5</span>).<span class="bu">sum</span>()</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>percentage <span class="op">=</span> fiveOrLess<span class="op">/</span><span class="bu">len</span>(df) <span class="op">*</span> <span class="dv">100</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Percentage of patients with 5 or less chronic illnesses: "</span>, percentage.<span class="bu">round</span>(<span class="dv">2</span>), <span class="st">"%"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="splitting-data" class="level2">
+<h2 class="anchored" data-anchor-id="splitting-data">Splitting Data</h2>
+<p>You might have noticed that there isn’t much data about patients with 5 or less chronic illnesses. Therefore, we are going to limit the dataset to only patients with 5 or less chronic illnesses to prevent outliers.</p>
+<div id="cell-11" class="cell" data-execution_count="106">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>fiveOrLess <span class="op">=</span> df[df[<span class="st">"gagne_sum_t"</span>] <span class="op">&lt;</span> <span class="dv">5</span>]</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>percentage <span class="op">=</span> <span class="bu">len</span>(fiveOrLess)<span class="op">/</span><span class="bu">len</span>(df) <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Percentage of patients with 5 or less chronic illnesses: "</span>, <span class="bu">round</span>(percentage, <span class="dv">2</span>), <span class="st">"%"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Percentage of patients with 5 or less chronic illnesses:  93.0 %</code></pre>
 </div>
 </div>
-<div id="cell-9" class="cell" data-execution_count="194">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[df[<span class="st">"cost_t"</span>] <span class="op">&gt;</span> <span class="dv">0</span>]</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"log_cost"</span>] <span class="op">=</span> df[<span class="st">"cost_t"</span>].transform(<span class="st">"log"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Here we calculate the log cost. This is important because our target variable varies widely across several orders of magnitude.</p>
+<div id="cell-13" class="cell" data-execution_count="107">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fiveOrLess <span class="op">=</span> fiveOrLess[fiveOrLess[<span class="st">"cost_t"</span>] <span class="op">&gt;</span> <span class="dv">0</span>]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>fiveOrLess[<span class="st">"log_cost"</span>] <span class="op">=</span> fiveOrLess[<span class="st">"cost_t"</span>].transform(<span class="st">"log"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-10" class="cell" data-execution_count="249">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"race_dummy"</span>] <span class="op">=</span> <span class="dv">1</span> <span class="op">*</span> (df[<span class="st">"race"</span>] <span class="op">==</span> <span class="st">"black"</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"race_dummy"</span>].mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="249">
-<pre><code>0.11329366348881353</code></pre>
+<p>In this step, we create a dummy column that has 0 meaning that the parient is white and 1 meaning that the patient is black. I also found that only 10% of the patients in this study were black. This is however not terribly lower than the U.S population average of 13%.</p>
+<div id="cell-15" class="cell" data-execution_count="108">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fiveOrLess[<span class="st">"race_dummy"</span>] <span class="op">=</span> <span class="dv">1</span> <span class="op">*</span> (fiveOrLess[<span class="st">"race"</span>] <span class="op">==</span> <span class="st">"black"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>fiveOrLess[<span class="st">"race_dummy"</span>].mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="108">
+<pre><code>0.10478072089871121</code></pre>
 </div>
 </div>
-<div id="cell-11" class="cell" data-execution_count="250">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> df[[<span class="st">"race_dummy"</span>, <span class="st">"gagne_sum_t"</span>]]</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> df[<span class="st">"log_cost"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-16" class="cell" data-execution_count="109">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> fiveOrLess[[<span class="st">"race_dummy"</span>, <span class="st">"gagne_sum_t"</span>]]</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> fiveOrLess[<span class="st">"log_cost"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-12" class="cell" data-execution_count="251">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_polynomial_features(X, degree):</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  X_ <span class="op">=</span> X.copy()</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, degree):</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    X_[<span class="ss">f"poly_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">"</span>] <span class="op">=</span> X_[<span class="st">"gagne_sum_t"</span>]<span class="op">**</span>j</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> X_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="polynomial-features" class="level2">
+<h2 class="anchored" data-anchor-id="polynomial-features">Polynomial Features</h2>
+<p>Since we are trying to fit a non-linear function with a linear regression, we can add polynomial features to improve our model. For example, in the following code block, I add polynomials of gagne_sum_t up to 8 degrees and print out the cross valuation score. I then pick the degree with the best score to use for my model.</p>
+<div id="cell-18" class="cell" data-execution_count="110">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_polynomial_features(X, degree):</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  X_ <span class="op">=</span> X.copy()</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, degree):</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    X_[<span class="ss">f"poly_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">"</span>] <span class="op">=</span> X_[<span class="st">"gagne_sum_t"</span>]<span class="op">**</span>j</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> X_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>In the next step, I loop through polynomial degrees up to 8</p>
-<div id="cell-14" class="cell" data-execution_count="252">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_score</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>LR <span class="op">=</span> LinearRegression()</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="bu">max</span> <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> degree <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">9</span>):</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    X_train <span class="op">=</span> add_polynomial_features(X_train, degree)</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    cv_score_LR <span class="op">=</span> cross_val_score(LR, X_train, y_train, cv<span class="op">=</span><span class="dv">5</span>)</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Degree </span><span class="sc">{</span>degree<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>cv_score_LR<span class="sc">.</span>mean()<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-19" class="cell" data-execution_count="115">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_score</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> degree <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">6</span>):</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    LR <span class="op">=</span> LinearRegression()</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    X_polyTrain <span class="op">=</span> add_polynomial_features(X_train, degree)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    LR.fit(X_polyTrain, y_train)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    cv_score_LR <span class="op">=</span> cross_val_score(LR, X_polyTrain, y_train, cv<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Degree </span><span class="sc">{</span>degree<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>cv_score_LR<span class="sc">.</span>mean()<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Degree 1: 0.14538846793594346
-Degree 2: 0.14537952700038775
-Degree 3: 0.14699336604386143
-Degree 4: 0.146909632661908
-Degree 5: 0.1473340656385787
-Degree 6: 0.14776094174784324
-Degree 7: 0.1480739986116853
-Degree 8: 0.14811660549076067</code></pre>
+<pre><code>Degree 1: 0.0707003471161072
+Degree 2: 0.07069112920880076
+Degree 3: 0.07180211781434358
+Degree 4: 0.07245274257563275
+Degree 5: 0.07313225738549074</code></pre>
 </div>
 </div>
-<div id="cell-15" class="cell" data-execution_count="253">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> add_polynomial_features(X_train, <span class="dv">8</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>LR.fit(X_train, y_train)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>LR.score(X_train, y_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="253">
-<pre><code>0.14859554176104295</code></pre>
+</section>
+<section id="selecting-degree" class="level2">
+<h2 class="anchored" data-anchor-id="selecting-degree">Selecting Degree</h2>
+<p>As we can see, degree 5 has the best score so we will select that to train our model which I do in the next step. It also makes sense with the fact that at over 5 conditions, our data becomes more sparse.</p>
+<div id="cell-21" class="cell" data-execution_count="112">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>FinalLR <span class="op">=</span> LinearRegression()</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>X_trainFinal <span class="op">=</span> add_polynomial_features(X_train, <span class="dv">5</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>FinalLR.fit(X_trainFinal, y_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="112">
+<style>#sk-container-id-7 {color: black;}#sk-container-id-7 pre{padding: 0;}#sk-container-id-7 div.sk-toggleable {background-color: white;}#sk-container-id-7 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-7 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-7 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-7 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-7 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-7 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-7 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-7 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-7 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-7 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-7 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-7 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-7 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-7 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-7 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-7 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-7 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-7 div.sk-item {position: relative;z-index: 1;}#sk-container-id-7 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-7 div.sk-item::before, #sk-container-id-7 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-7 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-7 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-7 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-7 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-7 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-7 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-7 div.sk-label-container {text-align: center;}#sk-container-id-7 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-7 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-7" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>LinearRegression()</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-7" type="checkbox" checked=""><label for="sk-estimator-id-7" class="sk-toggleable__label sk-toggleable__label-arrow">LinearRegression</label><div class="sk-toggleable__content"><pre>LinearRegression()</pre></div></div></div></div></div>
 </div>
 </div>
-<div id="cell-16" class="cell" data-execution_count="257">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(X_train.columns)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(LR.coef_)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-22" class="cell" data-execution_count="113">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(X_trainFinal.columns)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(FinalLR.coef_)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Index(['race_dummy', 'gagne_sum_t', 'poly_1', 'poly_2', 'poly_3', 'poly_4',
-       'poly_5', 'poly_6', 'poly_7'],
-      dtype='object')
-[-2.66862126e-01  3.36049611e-01  3.36049612e-01 -3.67776150e-01
-  1.30350450e-01 -2.24509569e-02  1.99855281e-03 -8.86256261e-05
-  1.54525291e-06]</code></pre>
+<pre><code>Index(['race_dummy', 'gagne_sum_t', 'poly_1', 'poly_2', 'poly_3', 'poly_4'], dtype='object')
+[-2.87073428e-01 -1.02948142e+11  1.02948142e+11 -7.32982800e-01
+  2.72133230e-01 -3.23777558e-02]</code></pre>
 </div>
 </div>
-<div id="cell-17" class="cell" data-execution_count="261">
+</section>
+<section id="getting-cost" class="level2">
+<h2 class="anchored" data-anchor-id="getting-cost">Getting cost</h2>
+<p>We can now calculate the cost incurred by black patients. We calculate that in the next code block by finding the coefficient that corresponds with race.</p>
+<div id="cell-24" class="cell" data-execution_count="114">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>np.exp(LR.coef_[<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="261">
-<pre><code>0.7657786454750596</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="114">
+<pre><code>0.7504566226125335</code></pre>
 </div>
 </div>
 <p>Here we see that the percentage cost of black patients is unsually high at around 76.6%.</p>
-</section>
 <section id="discussion" class="level3">
 <h3 class="anchored" data-anchor-id="discussion">Discussion</h3>
-<p>As mentioned in the abstract, this paper found that there existed a black and white patient divide in the correlation between the mean number of chronic illness and risk percentile. It found that there existed a disportionate cost of black patients compared to white patients with 76.6%. I learned that to account for nonlinear relationships, we can add polynomials and then use a linear model on one of the order of that polynomials.</p>
+<p>As mentioned in the abstract, this paper found that there existed a black and white patient divide in the correlation between the mean number of chronic illness and risk percentile. It found that there existed a disportionate cost of black patients compared to white patients with 76.6%. Essentially that when black patients have similar levels of chronic illness at white patients, they are still recieving lower scores than their counterparts. This means that less black patients are not recieving the care that they need since they overall have lower scores. These results are in line with those that Obermeyer et al.&nbsp;(2019) found in their paper. This exercises showcases how past historical data, like how black patients tend to recieve less care, can creep into algorithmic decision making.</p>
+<p>Of the three types of algorithmic bias guidelines: error rate parity, acceptance rate parity, and sufficiency, the study by Obermeyer et al.&nbsp;(2019) most clearly looks at error rate parity. This is because when we examine risk percentile scores to medical costs, we don’t see much of a difference between races. However, when we examine who gets what risk percentile scores, we see that white patients are often possibly higher scores than they are supposed to while black patients are given lower scores. Obermeyer points out that the algorithm falsely concludes that “black patients are healthier than equally sick white patients”.</p>
 
 
 </section>
