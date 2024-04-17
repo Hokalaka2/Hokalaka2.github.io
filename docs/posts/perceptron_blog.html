@@ -214,14 +214,10 @@ background-size: cover;
 <p>In this blog post, I examine a way to find a line that separates two sets of data using the perceptron algorithm. I will see how this perceptron algorithm works well in two dimensions but also on n-dimensional data. I will also examine the limitations of this algorithm on non-linear seperable data. Lastly, I’ll examine a variant of the perceptron algorithm called the mini-batch perceptron algorithm.</p>
 <section id="loading-in-perceptron-implementation" class="level2">
 <h2 class="anchored" data-anchor-id="loading-in-perceptron-implementation">Loading in Perceptron Implementation</h2>
-<div id="cell-3" class="cell" data-execution_count="264">
+<div id="cell-3" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>load_ext autoreload</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>autoreload <span class="dv">2</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> perceptron <span class="im">import</span> Perceptron, PerceptronOptimizer</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>The autoreload extension is already loaded. To reload it, use:
-  %reload_ext autoreload</code></pre>
-</div>
 </div>
 </section>
 <section id="perceptron-link" class="level2">
@@ -232,37 +228,37 @@ background-size: cover;
 <h2 class="anchored" data-anchor-id="perceptron-data">Perceptron Data</h2>
 <p>This is where I implemented how I get perceptron data. This code was partially taken from our lectures and warm up. It basically adds randomness to the points and makes the points linear seperable. It also makes the targets -1 and 1 instead of 0, and 1 because it makes it easier to change the color of the points. We also add a method that allows us to plot our 2 dimensional points.</p>
 <p>Lastly we plot the points to show what the points distribution looks like.</p>
-<div id="cell-6" class="cell" data-execution_count="265">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot <span class="im">as</span> plt</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>plt.style.use(<span class="st">'seaborn-v0_8-whitegrid'</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">123456</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> perceptron_data(n_points <span class="op">=</span> <span class="dv">300</span>, noise <span class="op">=</span> <span class="fl">0.2</span>, p_dims <span class="op">=</span> <span class="dv">2</span>):</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> torch.arange(n_points) <span class="op">&gt;=</span> <span class="bu">int</span>(n_points<span class="op">/</span><span class="dv">2</span>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> y[:, <span class="va">None</span>] <span class="op">+</span> torch.normal(<span class="fl">0.0</span>, noise, size <span class="op">=</span> (n_points,p_dims))</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> torch.cat((X, torch.ones((X.shape[<span class="dv">0</span>], <span class="dv">1</span>))), <span class="dv">1</span>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># convert y from {0, 1} to {-1, 1}</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="dv">2</span><span class="op">*</span>y <span class="op">-</span> <span class="dv">1</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> y.<span class="bu">type</span>(torch.FloatTensor)</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> X, y</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_perceptron_data(X, y, ax):</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> X.shape[<span class="dv">1</span>] <span class="op">==</span> <span class="dv">3</span>, <span class="st">"This function only works for data created with p_dims == 2"</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    targets <span class="op">=</span> [<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>]</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    markers <span class="op">=</span> [<span class="st">"o"</span> , <span class="st">","</span>]</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>):</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>        ix <span class="op">=</span> y <span class="op">==</span> targets[i]</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        ax.scatter(X[ix,<span class="dv">0</span>], X[ix,<span class="dv">1</span>], s <span class="op">=</span> <span class="dv">20</span>,  c <span class="op">=</span> y[ix], facecolors <span class="op">=</span> <span class="st">"none"</span>, edgecolors <span class="op">=</span> <span class="st">"darkgrey"</span>, cmap <span class="op">=</span> <span class="st">"BrBG"</span>, vmin <span class="op">=</span> <span class="op">-</span><span class="dv">2</span>, vmax <span class="op">=</span> <span class="dv">2</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>, marker <span class="op">=</span> markers[i])</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlabel <span class="op">=</span> <span class="vs">r"$x_1$"</span>, ylabel <span class="op">=</span> <span class="vs">r"$x_2$"</span>)</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>X, y <span class="op">=</span> perceptron_data()</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>plot_perceptron_data(X, y, ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-6" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot <span class="im">as</span> plt</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>plt.style.use(<span class="st">'seaborn-v0_8-whitegrid'</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">123456</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> perceptron_data(n_points <span class="op">=</span> <span class="dv">300</span>, noise <span class="op">=</span> <span class="fl">0.2</span>, p_dims <span class="op">=</span> <span class="dv">2</span>):</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> torch.arange(n_points) <span class="op">&gt;=</span> <span class="bu">int</span>(n_points<span class="op">/</span><span class="dv">2</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> y[:, <span class="va">None</span>] <span class="op">+</span> torch.normal(<span class="fl">0.0</span>, noise, size <span class="op">=</span> (n_points,p_dims))</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> torch.cat((X, torch.ones((X.shape[<span class="dv">0</span>], <span class="dv">1</span>))), <span class="dv">1</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># convert y from {0, 1} to {-1, 1}</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="dv">2</span><span class="op">*</span>y <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> y.<span class="bu">type</span>(torch.FloatTensor)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> X, y</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_perceptron_data(X, y, ax):</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> X.shape[<span class="dv">1</span>] <span class="op">==</span> <span class="dv">3</span>, <span class="st">"This function only works for data created with p_dims == 2"</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    targets <span class="op">=</span> [<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>]</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    markers <span class="op">=</span> [<span class="st">"o"</span> , <span class="st">","</span>]</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>):</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        ix <span class="op">=</span> y <span class="op">==</span> targets[i]</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        ax.scatter(X[ix,<span class="dv">0</span>], X[ix,<span class="dv">1</span>], s <span class="op">=</span> <span class="dv">20</span>,  c <span class="op">=</span> y[ix], facecolors <span class="op">=</span> <span class="st">"none"</span>, edgecolors <span class="op">=</span> <span class="st">"darkgrey"</span>, cmap <span class="op">=</span> <span class="st">"BrBG"</span>, vmin <span class="op">=</span> <span class="op">-</span><span class="dv">2</span>, vmax <span class="op">=</span> <span class="dv">2</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>, marker <span class="op">=</span> markers[i])</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlabel <span class="op">=</span> <span class="vs">r"$x_1$"</span>, ylabel <span class="op">=</span> <span class="vs">r"$x_2$"</span>)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>X, y <span class="op">=</span> perceptron_data()</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>plot_perceptron_data(X, y, ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -275,12 +271,12 @@ background-size: cover;
 <section id="examining-the-data" class="level2">
 <h2 class="anchored" data-anchor-id="examining-the-data">Examining the data</h2>
 <p>I select fifty of these points in order to use for my model because it felt somewhat uneccesarry to use all the points for this simple example. As we can see, the points are clearly linearly seperable.</p>
-<div id="cell-8" class="cell" data-execution_count="266">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">123456</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>X, y <span class="op">=</span> perceptron_data(n_points <span class="op">=</span> <span class="dv">50</span>, noise <span class="op">=</span> <span class="fl">0.3</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">1</span>, figsize <span class="op">=</span> (<span class="dv">4</span>, <span class="dv">4</span>))</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlim <span class="op">=</span> (<span class="op">-</span><span class="dv">1</span>, <span class="dv">2</span>), ylim <span class="op">=</span> (<span class="op">-</span><span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>plot_perceptron_data(X, y, ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-8" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">123456</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>X, y <span class="op">=</span> perceptron_data(n_points <span class="op">=</span> <span class="dv">50</span>, noise <span class="op">=</span> <span class="fl">0.3</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">1</span>, figsize <span class="op">=</span> (<span class="dv">4</span>, <span class="dv">4</span>))</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlim <span class="op">=</span> (<span class="op">-</span><span class="dv">1</span>, <span class="dv">2</span>), ylim <span class="op">=</span> (<span class="op">-</span><span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>plot_perceptron_data(X, y, ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -293,93 +289,97 @@ background-size: cover;
 <section id="draw-line-function" class="level2">
 <h2 class="anchored" data-anchor-id="draw-line-function">Draw line Function</h2>
 <p>I make a draw line function that allows us to vizualize the linear line that the model sets. This allows us to see progression and makes the Perceptron more intuitive.</p>
-<div id="cell-10" class="cell" data-execution_count="267">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_line(w, x_min, x_max, ax, <span class="op">**</span>kwargs):</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    w_ <span class="op">=</span> w.flatten()</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> torch.linspace(x_min, x_max, <span class="dv">101</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="op">-</span>(w_[<span class="dv">0</span>]<span class="op">*</span>x <span class="op">+</span> w_[<span class="dv">2</span>])<span class="op">/</span>w_[<span class="dv">1</span>]</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    l <span class="op">=</span> ax.plot(x, y, <span class="op">**</span>kwargs)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> rgb_to_hex(rgb):</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">'#</span><span class="sc">{:02x}{:02x}{:02x}</span><span class="st">'</span>.<span class="bu">format</span>(<span class="op">*</span>rgb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-10" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_line(w, x_min, x_max, ax, <span class="op">**</span>kwargs):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    w_ <span class="op">=</span> w.flatten()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> torch.linspace(x_min, x_max, <span class="dv">101</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="op">-</span>(w_[<span class="dv">0</span>]<span class="op">*</span>x <span class="op">+</span> w_[<span class="dv">2</span>])<span class="op">/</span>w_[<span class="dv">1</span>]</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    l <span class="op">=</span> ax.plot(x, y, <span class="op">**</span>kwargs)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> rgb_to_hex(rgb):</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">'#</span><span class="sc">{:02x}{:02x}{:02x}</span><span class="st">'</span>.<span class="bu">format</span>(<span class="op">*</span>rgb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="perceptron-loop" class="level2">
 <h2 class="anchored" data-anchor-id="perceptron-loop">Perceptron Loop</h2>
-<div id="cell-12" class="cell" data-execution_count="280">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.lines <span class="im">import</span> Line2D</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> perceptron_loop(X, y, max_iter <span class="op">=</span> <span class="dv">1000</span>, k <span class="op">=</span> <span class="dv">1</span>, alpha <span class="op">=</span> <span class="fl">1.0</span>, plot <span class="op">=</span> <span class="va">False</span>, plot_type <span class="op">=</span> <span class="st">"color"</span>):</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> Perceptron() </span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    opt <span class="op">=</span> PerceptronOptimizer(p, alpha)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    p.loss(X, y)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    loss <span class="op">=</span> <span class="fl">1.0</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> plot <span class="kw">and</span> plot_type <span class="op">==</span> <span class="st">"color"</span>:</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">1</span>, figsize <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">6</span>))</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        rgb <span class="op">=</span> (<span class="dv">255</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        ax.<span class="bu">set</span>(xlim <span class="op">=</span> (<span class="op">-</span><span class="dv">1</span>, <span class="dv">2</span>), ylim <span class="op">=</span> (<span class="op">-</span><span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> plot <span class="kw">and</span> plot_type <span class="op">==</span> <span class="st">"adjacent"</span>:</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        plt.rcParams[<span class="st">"figure.figsize"</span>] <span class="op">=</span> (<span class="dv">7</span>, <span class="dv">5</span>)</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        fig, axarr <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">3</span>, sharex <span class="op">=</span> <span class="va">True</span>, sharey <span class="op">=</span> <span class="va">True</span>)</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        markers <span class="op">=</span> [<span class="st">"o"</span>, <span class="st">","</span>]</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        marker_map <span class="op">=</span> {<span class="op">-</span><span class="dv">1</span> : <span class="dv">0</span>, <span class="dv">1</span> : <span class="dv">1</span>}</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>        current_ax <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># for keeping track of loss values</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    loss_vec <span class="op">=</span> []</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    lines <span class="op">=</span> []</span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">iter</span> <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    loss_w <span class="op">=</span> []</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> loss <span class="op">&gt;</span> <span class="dv">0</span> <span class="kw">and</span> <span class="bu">iter</span> <span class="op">&lt;</span> max_iter:</span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>        old_w <span class="op">=</span> torch.clone(p.w)</span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>        i <span class="op">=</span> torch.randperm(X.size(<span class="dv">0</span>))[:k]</span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>        x_i <span class="op">=</span> X[i,:]</span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>        y_i <span class="op">=</span> y[i]</span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>        local_loss <span class="op">=</span> opt.step(x_i, y_i, k) </span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> local_loss <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>            loss <span class="op">=</span> p.loss(X, y) </span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>            loss_vec.append(loss)</span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>            loss_w.append(torch.clone(p.w))</span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> plot <span class="kw">and</span> plot_type <span class="op">==</span> <span class="st">"adjacent"</span> <span class="kw">and</span> current_ax <span class="op">&lt;</span> <span class="dv">6</span>:</span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>                ax <span class="op">=</span> axarr.ravel()[current_ax]</span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>                plot_perceptron_data(X, y, ax)</span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>                draw_line(old_w, x_min <span class="op">=</span> <span class="op">-</span><span class="dv">1</span>, x_max <span class="op">=</span> <span class="dv">2</span>, ax <span class="op">=</span> ax, color <span class="op">=</span> <span class="st">"black"</span>, linestyle <span class="op">=</span> <span class="st">"dashed"</span>)</span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>                draw_line(p.w, x_min <span class="op">=</span> <span class="op">-</span><span class="dv">1</span>, x_max <span class="op">=</span> <span class="dv">2</span>, ax <span class="op">=</span> ax, color <span class="op">=</span> <span class="st">"black"</span>)</span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>                ax.scatter(X[i,<span class="dv">0</span>],X[i,<span class="dv">1</span>], color <span class="op">=</span> <span class="st">"black"</span>, facecolors <span class="op">=</span> <span class="st">"none"</span>, edgecolors <span class="op">=</span> <span class="st">"black"</span>, marker <span class="op">=</span> markers[marker_map[y[i].item()]])</span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>                ax.set_title(<span class="ss">f"loss = </span><span class="sc">{</span>loss<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>                ax.<span class="bu">set</span>(xlim <span class="op">=</span> (<span class="op">-</span><span class="dv">1</span>, <span class="dv">2</span>), ylim <span class="op">=</span> (<span class="op">-</span><span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>                current_ax <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>        <span class="bu">iter</span> <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> plot <span class="kw">and</span> plot_type <span class="op">==</span> <span class="st">"color"</span>:</span>
-<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>        plot_perceptron_data(X, y, ax)</span>
-<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(loss_vec)):</span>
-<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>            draw_line(loss_w[i], x_min <span class="op">=</span> <span class="op">-</span><span class="dv">1</span>, x_max <span class="op">=</span> <span class="dv">2</span>, ax <span class="op">=</span> ax, color <span class="op">=</span> rgb_to_hex(rgb), linestyle <span class="op">=</span> <span class="st">"solid"</span>)</span>
-<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>            lines.append(Line2D([<span class="dv">0</span>], [<span class="dv">0</span>], color<span class="op">=</span>rgb_to_hex(rgb), lw<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="st">"Line "</span> <span class="op">+</span> <span class="bu">str</span>(<span class="bu">len</span>(lines) <span class="op">+</span> <span class="dv">1</span>), linestyle<span class="op">=</span><span class="st">'-'</span>))</span>
-<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>            red, green, blue <span class="op">=</span> rgb</span>
-<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>            rgb <span class="op">=</span> (red<span class="op">-</span><span class="bu">int</span>(<span class="dv">280</span><span class="op">/</span><span class="bu">len</span>(loss_vec)), <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>        ax.legend(handles <span class="op">=</span> lines, loc<span class="op">=</span><span class="st">"upper right"</span>)</span>
-<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> loss_vec</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-12" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.lines <span class="im">import</span> Line2D</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> perceptron_loop(X, y, max_iter <span class="op">=</span> <span class="dv">1000</span>, k <span class="op">=</span> <span class="dv">1</span>, alpha <span class="op">=</span> <span class="fl">1.0</span>, plot <span class="op">=</span> <span class="va">False</span>, plot_type <span class="op">=</span> <span class="st">"color"</span>):</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> Perceptron() </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    opt <span class="op">=</span> PerceptronOptimizer(p, alpha)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    p.loss(X, y)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    loss <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> plot <span class="kw">and</span> plot_type <span class="op">==</span> <span class="st">"color"</span>:</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">1</span>, figsize <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        rgb <span class="op">=</span> (<span class="dv">255</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        ax.<span class="bu">set</span>(xlim <span class="op">=</span> (<span class="op">-</span><span class="dv">1</span>, <span class="dv">2</span>), ylim <span class="op">=</span> (<span class="op">-</span><span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> plot <span class="kw">and</span> plot_type <span class="op">==</span> <span class="st">"adjacent"</span>:</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        plt.rcParams[<span class="st">"figure.figsize"</span>] <span class="op">=</span> (<span class="dv">7</span>, <span class="dv">5</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        fig, axarr <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">3</span>, sharex <span class="op">=</span> <span class="va">True</span>, sharey <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        markers <span class="op">=</span> [<span class="st">"o"</span>, <span class="st">","</span>]</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        marker_map <span class="op">=</span> {<span class="op">-</span><span class="dv">1</span> : <span class="dv">0</span>, <span class="dv">1</span> : <span class="dv">1</span>}</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        current_ax <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># for keeping track of loss values</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    loss_vec <span class="op">=</span> []</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    lines <span class="op">=</span> []</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">iter</span> <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    loss_w <span class="op">=</span> []</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> loss <span class="op">&gt;</span> <span class="dv">0</span> <span class="kw">and</span> <span class="bu">iter</span> <span class="op">&lt;</span> max_iter:</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>        old_w <span class="op">=</span> torch.clone(p.w)</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>        i <span class="op">=</span> torch.randperm(X.size(<span class="dv">0</span>))[:k]</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        x_i <span class="op">=</span> X[i,:]</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>        y_i <span class="op">=</span> y[i]</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        local_loss <span class="op">=</span> opt.step(x_i, y_i, k) </span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> local_loss <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>            loss <span class="op">=</span> p.loss(X, y) </span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>            loss_vec.append(loss)</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>            loss_w.append(torch.clone(p.w))</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> plot <span class="kw">and</span> plot_type <span class="op">==</span> <span class="st">"adjacent"</span> <span class="kw">and</span> current_ax <span class="op">&lt;</span> <span class="dv">6</span>:</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>                ax <span class="op">=</span> axarr.ravel()[current_ax]</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>                plot_perceptron_data(X, y, ax)</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>                draw_line(old_w, x_min <span class="op">=</span> <span class="op">-</span><span class="dv">1</span>, x_max <span class="op">=</span> <span class="dv">2</span>, ax <span class="op">=</span> ax, color <span class="op">=</span> <span class="st">"black"</span>, linestyle <span class="op">=</span> <span class="st">"dashed"</span>)</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>                draw_line(p.w, x_min <span class="op">=</span> <span class="op">-</span><span class="dv">1</span>, x_max <span class="op">=</span> <span class="dv">2</span>, ax <span class="op">=</span> ax, color <span class="op">=</span> <span class="st">"black"</span>)</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>                ax.scatter(X[i,<span class="dv">0</span>],X[i,<span class="dv">1</span>], color <span class="op">=</span> <span class="st">"black"</span>, facecolors <span class="op">=</span> <span class="st">"none"</span>, edgecolors <span class="op">=</span> <span class="st">"black"</span>, marker <span class="op">=</span> markers[marker_map[y[i].item()]])</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>                ax.set_title(<span class="ss">f"loss = </span><span class="sc">{</span>loss<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>                ax.<span class="bu">set</span>(xlim <span class="op">=</span> (<span class="op">-</span><span class="dv">1</span>, <span class="dv">2</span>), ylim <span class="op">=</span> (<span class="op">-</span><span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>                current_ax <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>        <span class="bu">iter</span> <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> plot <span class="kw">and</span> plot_type <span class="op">==</span> <span class="st">"color"</span>:</span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>        plot_perceptron_data(X, y, ax)</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(loss_vec)):</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>            draw_line(loss_w[i], x_min <span class="op">=</span> <span class="op">-</span><span class="dv">1</span>, x_max <span class="op">=</span> <span class="dv">2</span>, ax <span class="op">=</span> ax, color <span class="op">=</span> rgb_to_hex(rgb), linestyle <span class="op">=</span> <span class="st">"solid"</span>)</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>            lines.append(Line2D([<span class="dv">0</span>], [<span class="dv">0</span>], color<span class="op">=</span>rgb_to_hex(rgb), lw<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="st">"Line "</span> <span class="op">+</span> <span class="bu">str</span>(<span class="bu">len</span>(lines) <span class="op">+</span> <span class="dv">1</span>), linestyle<span class="op">=</span><span class="st">'-'</span>))</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>            red, green, blue <span class="op">=</span> rgb</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>            rgb <span class="op">=</span> (red<span class="op">-</span><span class="bu">int</span>(<span class="dv">280</span><span class="op">/</span><span class="bu">len</span>(loss_vec)), <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>        ax.legend(handles <span class="op">=</span> lines, loc<span class="op">=</span><span class="st">"upper right"</span>)</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> loss_vec</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="color-representation" class="level2">
 <h2 class="anchored" data-anchor-id="color-representation">Color Representation</h2>
 <p>I wanted to make my own unique way to visualize the perceptron process so I made this fun color graph. The lines get darker as the model gets closer to convering. While it arguably works less successfully than the adjacent graph, it offers a new way to examine the process.</p>
-<div id="cell-14" class="cell" data-execution_count="269">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">123456</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>loss_vec <span class="op">=</span> perceptron_loop(X, y, plot <span class="op">=</span> <span class="va">True</span>, plot_type <span class="op">=</span> <span class="st">"color"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-14" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">123456</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>loss_vec <span class="op">=</span> perceptron_loop(X, y, plot <span class="op">=</span> <span class="va">True</span>, plot_type <span class="op">=</span> <span class="st">"color"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/otismilliken/Documents/Educational/Middlebury/Senior/MachineLearning/Hokalaka2.github.io/posts/perceptron.py:28: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at /private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_5ae0635zuj/croot/pytorch-select_1700511177724/work/aten/src/ATen/native/TensorShape.cpp:3618.)
+  return X @ self.w.T</code></pre>
+</div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="perceptron_blog_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="perceptron_blog_files/figure-html/cell-7-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>Here is the algorithm loop but with adjacent graphs instead of different colored lines. This is more similar to what Prof.&nbsp;Phil did in class.</p>
-<div id="cell-16" class="cell" data-execution_count="270">
+<div id="cell-16" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">123456</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>loss_vec <span class="op">=</span> perceptron_loop(X, y, k <span class="op">=</span> <span class="dv">1</span>, plot <span class="op">=</span> <span class="va">False</span>, plot_type <span class="op">=</span> <span class="st">"adjacent"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -387,7 +387,7 @@ background-size: cover;
 <section id="convergence" class="level2">
 <h2 class="anchored" data-anchor-id="convergence">Convergence</h2>
 <p>Here we can see the model converge to zero loss. In order to clear up the graph, this graph only shows the changes in p.w’s and not every attempt.</p>
-<div id="cell-18" class="cell" data-execution_count="271">
+<div id="cell-18" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>plt.plot(loss_vec, color <span class="op">=</span> <span class="st">"slategrey"</span>)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>plt.scatter(torch.arange(<span class="bu">len</span>(loss_vec)), loss_vec, color <span class="op">=</span> <span class="st">"slategrey"</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>labs <span class="op">=</span> plt.gca().<span class="bu">set</span>(xlabel <span class="op">=</span> <span class="st">"Perceptron Iteration (Updates Only)"</span>, ylabel <span class="op">=</span> <span class="st">"loss"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -403,7 +403,7 @@ background-size: cover;
 <section id="not-linearly-seperable-data" class="level2">
 <h2 class="anchored" data-anchor-id="not-linearly-seperable-data">Not Linearly Seperable Data</h2>
 <p>What if our data is not linearly seperable. In this next part, I make a completely random dataset. As we’ll see, it would be impossible to drawn a line in order to make a loss of 0.</p>
-<div id="cell-20" class="cell" data-execution_count="272">
+<div id="cell-20" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">123456</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_data(n_points <span class="op">=</span> <span class="dv">300</span>, noise <span class="op">=</span> <span class="fl">0.2</span>, p_dims <span class="op">=</span> <span class="dv">2</span>):</span>
@@ -437,7 +437,7 @@ background-size: cover;
 </div>
 </div>
 <p>So how does our perceptron algorithm fair in this instance. We’ll as we can see in this next part, perceptron still tries to find a solution. It will jump around, trying new values but will never find a line that fits. This will continue forever. However, in my case, I have set a max number of iterations at 1000 so that it will stop then.</p>
-<div id="cell-22" class="cell" data-execution_count="273">
+<div id="cell-22" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">123456</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>loss_vec <span class="op">=</span> perceptron_loop(X_rand, y_rand, plot <span class="op">=</span> <span class="va">True</span>, plot_type <span class="op">=</span> <span class="st">"adjacent"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -450,7 +450,7 @@ background-size: cover;
 </div>
 </div>
 <p>As we can see, it continues to jump around but without any solution. In this example, our perceptron tries a little over 500 different lines.</p>
-<div id="cell-24" class="cell" data-execution_count="274">
+<div id="cell-24" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>plt.plot(loss_vec, color <span class="op">=</span> <span class="st">"slategrey"</span>)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>plt.scatter(torch.arange(<span class="bu">len</span>(loss_vec)), loss_vec, color <span class="op">=</span> <span class="st">"slategrey"</span>)</span>
@@ -467,7 +467,7 @@ background-size: cover;
 <section id="multiple-dimensions" class="level2">
 <h2 class="anchored" data-anchor-id="multiple-dimensions">Multiple Dimensions</h2>
 <p>Very often data is not just 2 dimension. How does Perceptron work on 3, 4, 5 dimensional data sets. Well luckily, we can try this out! Our data method from the beginning allows us to change the number of dimensions of the dataset.</p>
-<div id="cell-26" class="cell" data-execution_count="275">
+<div id="cell-26" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">123456</span>)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>X_multiple, y_multiple <span class="op">=</span> perceptron_data(n_points <span class="op">=</span> <span class="dv">300</span>, noise <span class="op">=</span> <span class="fl">0.2</span>, p_dims <span class="op">=</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -476,7 +476,7 @@ background-size: cover;
 <section id="result" class="level2">
 <h2 class="anchored" data-anchor-id="result">Result</h2>
 <p>As we can in the next graph, our algorithm still gets to zero loss! As long as our data is linearly seperable than perceptron algorithm will work.</p>
-<div id="cell-28" class="cell" data-execution_count="276">
+<div id="cell-28" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>loss_vec <span class="op">=</span> perceptron_loop(X_multiple, y_multiple, plot <span class="op">=</span> <span class="va">False</span>)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>plt.plot(loss_vec, color <span class="op">=</span> <span class="st">"slategrey"</span>)</span>
@@ -495,7 +495,7 @@ background-size: cover;
 <section id="mini-batch-perceptron" class="level1">
 <h1>Mini Batch Perceptron</h1>
 <p>There seems to be an obvious way to speed up our algorithm. What if instead of picking one random point and choosing a line, we pick a bunch of points together? This simple idea is behind the mini batch perceptron algorithm. We can choose k points and basically average our results of them. It also introduces the idea of alpha or a way to control the convergence of our algorithm. Too big of an alpha and we may overshoot our local minimum but too small of an alpha and convergence might take longer.</p>
-<div id="cell-30" class="cell" data-execution_count="277">
+<div id="cell-30" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">1234</span>)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>loss_vec <span class="op">=</span> perceptron_loop(X_multiple, y_multiple, k <span class="op">=</span> <span class="dv">1</span>, alpha <span class="op">=</span> <span class="dv">1</span>, plot <span class="op">=</span> <span class="va">False</span>)</span>
@@ -514,7 +514,7 @@ background-size: cover;
 <section id="k-10" class="level2">
 <h2 class="anchored" data-anchor-id="k-10">k = 10</h2>
 <p>Here we see our algorithm if we were to pick of k of 10. While we similar convergence times, it does less jumping around and has more of a constant decrease in loss.</p>
-<div id="cell-32" class="cell" data-execution_count="278">
+<div id="cell-32" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">1234</span>)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>loss_vec <span class="op">=</span> perceptron_loop(X_multiple, y_multiple, k <span class="op">=</span> <span class="dv">10</span>, alpha <span class="op">=</span> <span class="dv">1</span>, plot <span class="op">=</span> <span class="va">False</span>)</span>
@@ -534,7 +534,7 @@ background-size: cover;
 <section id="k-n" class="level2">
 <h2 class="anchored" data-anchor-id="k-n">k = n</h2>
 <p>What if k = n.&nbsp;Well in this scenerio, since we’re getting all of the points at once, alpha is the only thing changing our w. This means we’ll converge even on data that is not linearly seperable. Here we see that.</p>
-<div id="cell-34" class="cell" data-execution_count="281">
+<div id="cell-34" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">123456</span>)</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>loss_vec <span class="op">=</span> perceptron_loop(X_rand, y_rand, max_iter <span class="op">=</span> <span class="dv">1000</span>, k <span class="op">=</span> X_rand.size()[<span class="dv">0</span>], alpha <span class="op">=</span> <span class="fl">0.0001</span>, plot <span class="op">=</span> <span class="va">False</span>)</span>
@@ -542,1012 +542,10 @@ background-size: cover;
 <span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>plt.plot(loss_vec, color <span class="op">=</span> <span class="st">"slategrey"</span>)</span>
 <span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>plt.scatter(torch.arange(<span class="bu">len</span>(loss_vec)), loss_vec, color <span class="op">=</span> <span class="st">"slategrey"</span>)</span>
 <span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>labs <span class="op">=</span> plt.gca().<span class="bu">set</span>(xlabel <span class="op">=</span> <span class="st">"Perceptron Iteration (Updates Only)"</span>, ylabel <span class="op">=</span> <span class="st">"loss"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>tensor([0.5043, 0.8178, 0.4797])
-tensor([0.5043, 0.8178, 0.4797])
-tensor([0.5043, 0.8178, 0.4796])
-tensor([0.5043, 0.8178, 0.4796])
-tensor([0.5043, 0.8178, 0.4795])
-tensor([0.5043, 0.8178, 0.4795])
-tensor([0.5043, 0.8178, 0.4794])
-tensor([0.5043, 0.8178, 0.4794])
-tensor([0.5043, 0.8178, 0.4793])
-tensor([0.5043, 0.8178, 0.4793])
-tensor([0.5043, 0.8178, 0.4792])
-tensor([0.5043, 0.8178, 0.4792])
-tensor([0.5043, 0.8178, 0.4791])
-tensor([0.5043, 0.8178, 0.4791])
-tensor([0.5043, 0.8178, 0.4790])
-tensor([0.5043, 0.8178, 0.4790])
-tensor([0.5043, 0.8178, 0.4789])
-tensor([0.5043, 0.8178, 0.4789])
-tensor([0.5043, 0.8178, 0.4788])
-tensor([0.5043, 0.8178, 0.4788])
-tensor([0.5043, 0.8178, 0.4787])
-tensor([0.5043, 0.8178, 0.4787])
-tensor([0.5043, 0.8178, 0.4786])
-tensor([0.5043, 0.8178, 0.4786])
-tensor([0.5043, 0.8178, 0.4785])
-tensor([0.5043, 0.8178, 0.4785])
-tensor([0.5043, 0.8178, 0.4784])
-tensor([0.5043, 0.8178, 0.4784])
-tensor([0.5043, 0.8178, 0.4783])
-tensor([0.5043, 0.8178, 0.4783])
-tensor([0.5043, 0.8178, 0.4782])
-tensor([0.5042, 0.8178, 0.4782])
-tensor([0.5042, 0.8178, 0.4781])
-tensor([0.5042, 0.8178, 0.4781])
-tensor([0.5042, 0.8178, 0.4780])
-tensor([0.5042, 0.8178, 0.4780])
-tensor([0.5042, 0.8178, 0.4779])
-tensor([0.5042, 0.8178, 0.4779])
-tensor([0.5042, 0.8178, 0.4778])
-tensor([0.5042, 0.8178, 0.4778])
-tensor([0.5042, 0.8178, 0.4777])
-tensor([0.5042, 0.8178, 0.4777])
-tensor([0.5042, 0.8178, 0.4776])
-tensor([0.5042, 0.8178, 0.4776])
-tensor([0.5042, 0.8178, 0.4775])
-tensor([0.5042, 0.8178, 0.4775])
-tensor([0.5042, 0.8178, 0.4774])
-tensor([0.5042, 0.8178, 0.4774])
-tensor([0.5042, 0.8178, 0.4773])
-tensor([0.5042, 0.8178, 0.4773])
-tensor([0.5042, 0.8178, 0.4772])
-tensor([0.5042, 0.8178, 0.4772])
-tensor([0.5042, 0.8178, 0.4771])
-tensor([0.5042, 0.8178, 0.4771])
-tensor([0.5042, 0.8178, 0.4770])
-tensor([0.5042, 0.8178, 0.4770])
-tensor([0.5042, 0.8178, 0.4769])
-tensor([0.5042, 0.8178, 0.4769])
-tensor([0.5042, 0.8178, 0.4768])
-tensor([0.5042, 0.8178, 0.4768])
-tensor([0.5042, 0.8178, 0.4767])
-tensor([0.5042, 0.8178, 0.4767])
-tensor([0.5042, 0.8178, 0.4766])
-tensor([0.5042, 0.8178, 0.4766])
-tensor([0.5042, 0.8178, 0.4765])
-tensor([0.5042, 0.8178, 0.4765])
-tensor([0.5042, 0.8178, 0.4764])
-tensor([0.5042, 0.8178, 0.4764])
-tensor([0.5042, 0.8178, 0.4763])
-tensor([0.5042, 0.8178, 0.4763])
-tensor([0.5042, 0.8178, 0.4762])
-tensor([0.5042, 0.8178, 0.4762])
-tensor([0.5042, 0.8178, 0.4761])
-tensor([0.5042, 0.8178, 0.4761])
-tensor([0.5042, 0.8178, 0.4760])
-tensor([0.5042, 0.8178, 0.4760])
-tensor([0.5042, 0.8178, 0.4759])
-tensor([0.5042, 0.8178, 0.4759])
-tensor([0.5042, 0.8178, 0.4758])
-tensor([0.5042, 0.8179, 0.4758])
-tensor([0.5042, 0.8179, 0.4757])
-tensor([0.5042, 0.8179, 0.4757])
-tensor([0.5042, 0.8179, 0.4756])
-tensor([0.5042, 0.8179, 0.4756])
-tensor([0.5042, 0.8179, 0.4755])
-tensor([0.5042, 0.8179, 0.4755])
-tensor([0.5042, 0.8179, 0.4754])
-tensor([0.5042, 0.8179, 0.4754])
-tensor([0.5042, 0.8179, 0.4753])
-tensor([0.5042, 0.8179, 0.4753])
-tensor([0.5042, 0.8179, 0.4752])
-tensor([0.5042, 0.8179, 0.4752])
-tensor([0.5042, 0.8179, 0.4751])
-tensor([0.5042, 0.8179, 0.4751])
-tensor([0.5042, 0.8179, 0.4750])
-tensor([0.5042, 0.8179, 0.4750])
-tensor([0.5042, 0.8179, 0.4749])
-tensor([0.5042, 0.8179, 0.4749])
-tensor([0.5042, 0.8179, 0.4748])
-tensor([0.5042, 0.8179, 0.4748])
-tensor([0.5042, 0.8179, 0.4747])
-tensor([0.5042, 0.8179, 0.4747])
-tensor([0.5042, 0.8179, 0.4746])
-tensor([0.5042, 0.8179, 0.4746])
-tensor([0.5042, 0.8179, 0.4745])
-tensor([0.5042, 0.8179, 0.4745])
-tensor([0.5042, 0.8179, 0.4744])
-tensor([0.5042, 0.8179, 0.4744])
-tensor([0.5042, 0.8179, 0.4743])
-tensor([0.5042, 0.8179, 0.4743])
-tensor([0.5042, 0.8179, 0.4742])
-tensor([0.5042, 0.8179, 0.4742])
-tensor([0.5042, 0.8179, 0.4741])
-tensor([0.5042, 0.8179, 0.4741])
-tensor([0.5042, 0.8179, 0.4740])
-tensor([0.5042, 0.8179, 0.4740])
-tensor([0.5042, 0.8179, 0.4739])
-tensor([0.5042, 0.8179, 0.4739])
-tensor([0.5042, 0.8179, 0.4738])
-tensor([0.5042, 0.8179, 0.4738])
-tensor([0.5042, 0.8179, 0.4737])
-tensor([0.5042, 0.8179, 0.4737])
-tensor([0.5042, 0.8179, 0.4736])
-tensor([0.5042, 0.8179, 0.4736])
-tensor([0.5042, 0.8179, 0.4735])
-tensor([0.5042, 0.8179, 0.4735])
-tensor([0.5042, 0.8179, 0.4734])
-tensor([0.5042, 0.8179, 0.4734])
-tensor([0.5042, 0.8179, 0.4733])
-tensor([0.5042, 0.8179, 0.4733])
-tensor([0.5042, 0.8179, 0.4732])
-tensor([0.5042, 0.8179, 0.4732])
-tensor([0.5042, 0.8179, 0.4731])
-tensor([0.5042, 0.8179, 0.4731])
-tensor([0.5042, 0.8179, 0.4730])
-tensor([0.5042, 0.8179, 0.4730])
-tensor([0.5042, 0.8179, 0.4729])
-tensor([0.5042, 0.8179, 0.4729])
-tensor([0.5042, 0.8179, 0.4728])
-tensor([0.5042, 0.8179, 0.4728])
-tensor([0.5042, 0.8179, 0.4727])
-tensor([0.5042, 0.8179, 0.4727])
-tensor([0.5042, 0.8179, 0.4726])
-tensor([0.5042, 0.8179, 0.4726])
-tensor([0.5042, 0.8179, 0.4725])
-tensor([0.5042, 0.8179, 0.4725])
-tensor([0.5042, 0.8179, 0.4724])
-tensor([0.5042, 0.8179, 0.4724])
-tensor([0.5042, 0.8179, 0.4723])
-tensor([0.5042, 0.8179, 0.4723])
-tensor([0.5042, 0.8179, 0.4722])
-tensor([0.5041, 0.8179, 0.4722])
-tensor([0.5041, 0.8179, 0.4721])
-tensor([0.5041, 0.8179, 0.4721])
-tensor([0.5041, 0.8179, 0.4720])
-tensor([0.5041, 0.8179, 0.4720])
-tensor([0.5041, 0.8179, 0.4719])
-tensor([0.5041, 0.8179, 0.4719])
-tensor([0.5041, 0.8179, 0.4718])
-tensor([0.5041, 0.8179, 0.4718])
-tensor([0.5041, 0.8179, 0.4717])
-tensor([0.5041, 0.8179, 0.4717])
-tensor([0.5041, 0.8179, 0.4716])
-tensor([0.5041, 0.8179, 0.4716])
-tensor([0.5041, 0.8179, 0.4715])
-tensor([0.5041, 0.8179, 0.4715])
-tensor([0.5041, 0.8179, 0.4714])
-tensor([0.5041, 0.8179, 0.4714])
-tensor([0.5041, 0.8179, 0.4713])
-tensor([0.5041, 0.8179, 0.4713])
-tensor([0.5041, 0.8179, 0.4712])
-tensor([0.5041, 0.8179, 0.4712])
-tensor([0.5041, 0.8179, 0.4711])
-tensor([0.5041, 0.8179, 0.4711])
-tensor([0.5041, 0.8179, 0.4710])
-tensor([0.5041, 0.8179, 0.4710])
-tensor([0.5041, 0.8179, 0.4709])
-tensor([0.5041, 0.8179, 0.4709])
-tensor([0.5041, 0.8179, 0.4708])
-tensor([0.5041, 0.8179, 0.4708])
-tensor([0.5041, 0.8179, 0.4707])
-tensor([0.5041, 0.8179, 0.4707])
-tensor([0.5041, 0.8179, 0.4706])
-tensor([0.5041, 0.8179, 0.4706])
-tensor([0.5041, 0.8179, 0.4705])
-tensor([0.5041, 0.8179, 0.4705])
-tensor([0.5041, 0.8179, 0.4704])
-tensor([0.5041, 0.8179, 0.4704])
-tensor([0.5041, 0.8179, 0.4703])
-tensor([0.5041, 0.8179, 0.4703])
-tensor([0.5041, 0.8179, 0.4702])
-tensor([0.5041, 0.8179, 0.4702])
-tensor([0.5041, 0.8179, 0.4701])
-tensor([0.5041, 0.8179, 0.4701])
-tensor([0.5041, 0.8179, 0.4700])
-tensor([0.5041, 0.8179, 0.4700])
-tensor([0.5041, 0.8179, 0.4699])
-tensor([0.5041, 0.8179, 0.4699])
-tensor([0.5041, 0.8179, 0.4698])
-tensor([0.5041, 0.8179, 0.4698])
-tensor([0.5041, 0.8179, 0.4697])
-tensor([0.5041, 0.8179, 0.4697])
-tensor([0.5041, 0.8179, 0.4696])
-tensor([0.5041, 0.8179, 0.4696])
-tensor([0.5041, 0.8179, 0.4695])
-tensor([0.5041, 0.8179, 0.4695])
-tensor([0.5041, 0.8179, 0.4694])
-tensor([0.5041, 0.8179, 0.4694])
-tensor([0.5041, 0.8179, 0.4693])
-tensor([0.5041, 0.8179, 0.4693])
-tensor([0.5041, 0.8179, 0.4692])
-tensor([0.5041, 0.8179, 0.4692])
-tensor([0.5041, 0.8179, 0.4691])
-tensor([0.5041, 0.8179, 0.4691])
-tensor([0.5041, 0.8179, 0.4690])
-tensor([0.5041, 0.8179, 0.4690])
-tensor([0.5041, 0.8179, 0.4689])
-tensor([0.5041, 0.8179, 0.4689])
-tensor([0.5041, 0.8180, 0.4688])
-tensor([0.5041, 0.8180, 0.4688])
-tensor([0.5041, 0.8180, 0.4687])
-tensor([0.5041, 0.8180, 0.4687])
-tensor([0.5041, 0.8180, 0.4686])
-tensor([0.5041, 0.8180, 0.4686])
-tensor([0.5041, 0.8180, 0.4685])
-tensor([0.5041, 0.8180, 0.4685])
-tensor([0.5041, 0.8180, 0.4684])
-tensor([0.5041, 0.8180, 0.4684])
-tensor([0.5041, 0.8180, 0.4683])
-tensor([0.5041, 0.8180, 0.4683])
-tensor([0.5041, 0.8180, 0.4682])
-tensor([0.5041, 0.8180, 0.4682])
-tensor([0.5041, 0.8180, 0.4681])
-tensor([0.5041, 0.8180, 0.4681])
-tensor([0.5041, 0.8180, 0.4680])
-tensor([0.5041, 0.8180, 0.4680])
-tensor([0.5041, 0.8180, 0.4679])
-tensor([0.5041, 0.8180, 0.4679])
-tensor([0.5041, 0.8180, 0.4678])
-tensor([0.5041, 0.8180, 0.4678])
-tensor([0.5041, 0.8180, 0.4677])
-tensor([0.5041, 0.8180, 0.4677])
-tensor([0.5041, 0.8180, 0.4676])
-tensor([0.5041, 0.8180, 0.4676])
-tensor([0.5041, 0.8180, 0.4675])
-tensor([0.5041, 0.8180, 0.4675])
-tensor([0.5041, 0.8180, 0.4674])
-tensor([0.5041, 0.8180, 0.4674])
-tensor([0.5041, 0.8180, 0.4673])
-tensor([0.5041, 0.8180, 0.4673])
-tensor([0.5041, 0.8180, 0.4672])
-tensor([0.5041, 0.8180, 0.4672])
-tensor([0.5041, 0.8180, 0.4671])
-tensor([0.5041, 0.8180, 0.4671])
-tensor([0.5041, 0.8180, 0.4670])
-tensor([0.5041, 0.8180, 0.4670])
-tensor([0.5041, 0.8180, 0.4669])
-tensor([0.5041, 0.8180, 0.4669])
-tensor([0.5041, 0.8180, 0.4668])
-tensor([0.5041, 0.8180, 0.4668])
-tensor([0.5041, 0.8180, 0.4667])
-tensor([0.5041, 0.8180, 0.4667])
-tensor([0.5041, 0.8180, 0.4666])
-tensor([0.5041, 0.8180, 0.4666])
-tensor([0.5041, 0.8180, 0.4665])
-tensor([0.5041, 0.8180, 0.4665])
-tensor([0.5041, 0.8180, 0.4664])
-tensor([0.5041, 0.8180, 0.4664])
-tensor([0.5041, 0.8180, 0.4663])
-tensor([0.5041, 0.8180, 0.4663])
-tensor([0.5041, 0.8180, 0.4662])
-tensor([0.5040, 0.8180, 0.4662])
-tensor([0.5040, 0.8180, 0.4661])
-tensor([0.5040, 0.8180, 0.4661])
-tensor([0.5040, 0.8180, 0.4660])
-tensor([0.5040, 0.8180, 0.4660])
-tensor([0.5040, 0.8180, 0.4659])
-tensor([0.5040, 0.8180, 0.4659])
-tensor([0.5040, 0.8180, 0.4658])
-tensor([0.5040, 0.8180, 0.4658])
-tensor([0.5040, 0.8180, 0.4657])
-tensor([0.5040, 0.8180, 0.4657])
-tensor([0.5040, 0.8180, 0.4656])
-tensor([0.5040, 0.8180, 0.4656])
-tensor([0.5040, 0.8180, 0.4655])
-tensor([0.5040, 0.8180, 0.4655])
-tensor([0.5040, 0.8180, 0.4654])
-tensor([0.5040, 0.8180, 0.4654])
-tensor([0.5040, 0.8180, 0.4653])
-tensor([0.5040, 0.8180, 0.4653])
-tensor([0.5040, 0.8180, 0.4652])
-tensor([0.5040, 0.8180, 0.4652])
-tensor([0.5040, 0.8180, 0.4651])
-tensor([0.5040, 0.8180, 0.4651])
-tensor([0.5040, 0.8180, 0.4650])
-tensor([0.5040, 0.8180, 0.4650])
-tensor([0.5040, 0.8180, 0.4649])
-tensor([0.5040, 0.8180, 0.4649])
-tensor([0.5040, 0.8180, 0.4648])
-tensor([0.5040, 0.8180, 0.4648])
-tensor([0.5040, 0.8180, 0.4647])
-tensor([0.5040, 0.8180, 0.4647])
-tensor([0.5040, 0.8180, 0.4646])
-tensor([0.5040, 0.8180, 0.4646])
-tensor([0.5040, 0.8180, 0.4645])
-tensor([0.5040, 0.8180, 0.4645])
-tensor([0.5040, 0.8180, 0.4644])
-tensor([0.5040, 0.8180, 0.4644])
-tensor([0.5040, 0.8180, 0.4643])
-tensor([0.5040, 0.8180, 0.4643])
-tensor([0.5040, 0.8180, 0.4642])
-tensor([0.5040, 0.8180, 0.4642])
-tensor([0.5040, 0.8180, 0.4641])
-tensor([0.5040, 0.8180, 0.4641])
-tensor([0.5040, 0.8180, 0.4640])
-tensor([0.5040, 0.8180, 0.4640])
-tensor([0.5040, 0.8180, 0.4639])
-tensor([0.5040, 0.8180, 0.4639])
-tensor([0.5040, 0.8180, 0.4638])
-tensor([0.5040, 0.8180, 0.4638])
-tensor([0.5040, 0.8180, 0.4637])
-tensor([0.5040, 0.8180, 0.4637])
-tensor([0.5040, 0.8180, 0.4636])
-tensor([0.5040, 0.8180, 0.4636])
-tensor([0.5040, 0.8180, 0.4635])
-tensor([0.5040, 0.8180, 0.4635])
-tensor([0.5040, 0.8180, 0.4634])
-tensor([0.5040, 0.8180, 0.4634])
-tensor([0.5040, 0.8180, 0.4633])
-tensor([0.5040, 0.8180, 0.4633])
-tensor([0.5040, 0.8180, 0.4632])
-tensor([0.5040, 0.8180, 0.4632])
-tensor([0.5040, 0.8180, 0.4631])
-tensor([0.5040, 0.8180, 0.4631])
-tensor([0.5040, 0.8180, 0.4630])
-tensor([0.5040, 0.8180, 0.4630])
-tensor([0.5040, 0.8180, 0.4629])
-tensor([0.5040, 0.8180, 0.4629])
-tensor([0.5040, 0.8180, 0.4628])
-tensor([0.5040, 0.8180, 0.4628])
-tensor([0.5040, 0.8180, 0.4627])
-tensor([0.5040, 0.8180, 0.4627])
-tensor([0.5040, 0.8180, 0.4626])
-tensor([0.5040, 0.8180, 0.4626])
-tensor([0.5040, 0.8180, 0.4625])
-tensor([0.5040, 0.8180, 0.4625])
-tensor([0.5040, 0.8180, 0.4624])
-tensor([0.5040, 0.8180, 0.4624])
-tensor([0.5040, 0.8180, 0.4623])
-tensor([0.5040, 0.8180, 0.4623])
-tensor([0.5040, 0.8180, 0.4622])
-tensor([0.5040, 0.8180, 0.4622])
-tensor([0.5040, 0.8180, 0.4621])
-tensor([0.5040, 0.8180, 0.4621])
-tensor([0.5040, 0.8180, 0.4620])
-tensor([0.5040, 0.8180, 0.4620])
-tensor([0.5040, 0.8180, 0.4619])
-tensor([0.5040, 0.8180, 0.4619])
-tensor([0.5040, 0.8181, 0.4618])
-tensor([0.5040, 0.8181, 0.4618])
-tensor([0.5040, 0.8181, 0.4617])
-tensor([0.5040, 0.8181, 0.4617])
-tensor([0.5040, 0.8181, 0.4616])
-tensor([0.5040, 0.8181, 0.4616])
-tensor([0.5040, 0.8181, 0.4615])
-tensor([0.5040, 0.8181, 0.4615])
-tensor([0.5040, 0.8181, 0.4614])
-tensor([0.5040, 0.8181, 0.4614])
-tensor([0.5040, 0.8181, 0.4613])
-tensor([0.5040, 0.8181, 0.4613])
-tensor([0.5040, 0.8181, 0.4612])
-tensor([0.5040, 0.8181, 0.4612])
-tensor([0.5040, 0.8181, 0.4611])
-tensor([0.5040, 0.8181, 0.4611])
-tensor([0.5040, 0.8181, 0.4610])
-tensor([0.5040, 0.8181, 0.4610])
-tensor([0.5040, 0.8181, 0.4609])
-tensor([0.5040, 0.8181, 0.4609])
-tensor([0.5040, 0.8181, 0.4608])
-tensor([0.5040, 0.8181, 0.4608])
-tensor([0.5040, 0.8181, 0.4607])
-tensor([0.5040, 0.8181, 0.4607])
-tensor([0.5040, 0.8181, 0.4606])
-tensor([0.5040, 0.8181, 0.4606])
-tensor([0.5040, 0.8181, 0.4605])
-tensor([0.5040, 0.8181, 0.4605])
-tensor([0.5040, 0.8181, 0.4604])
-tensor([0.5040, 0.8181, 0.4604])
-tensor([0.5040, 0.8181, 0.4603])
-tensor([0.5040, 0.8181, 0.4603])
-tensor([0.5040, 0.8181, 0.4602])
-tensor([0.5039, 0.8181, 0.4602])
-tensor([0.5039, 0.8181, 0.4601])
-tensor([0.5039, 0.8181, 0.4601])
-tensor([0.5039, 0.8181, 0.4600])
-tensor([0.5039, 0.8181, 0.4600])
-tensor([0.5039, 0.8181, 0.4599])
-tensor([0.5039, 0.8181, 0.4599])
-tensor([0.5039, 0.8181, 0.4598])
-tensor([0.5039, 0.8181, 0.4598])
-tensor([0.5039, 0.8181, 0.4597])
-tensor([0.5039, 0.8181, 0.4597])
-tensor([0.5039, 0.8181, 0.4596])
-tensor([0.5039, 0.8181, 0.4596])
-tensor([0.5039, 0.8181, 0.4595])
-tensor([0.5039, 0.8181, 0.4595])
-tensor([0.5039, 0.8181, 0.4594])
-tensor([0.5039, 0.8181, 0.4594])
-tensor([0.5039, 0.8181, 0.4593])
-tensor([0.5039, 0.8181, 0.4593])
-tensor([0.5039, 0.8181, 0.4592])
-tensor([0.5039, 0.8181, 0.4592])
-tensor([0.5039, 0.8181, 0.4591])
-tensor([0.5039, 0.8181, 0.4591])
-tensor([0.5039, 0.8181, 0.4590])
-tensor([0.5039, 0.8181, 0.4590])
-tensor([0.5039, 0.8181, 0.4589])
-tensor([0.5039, 0.8181, 0.4589])
-tensor([0.5039, 0.8181, 0.4588])
-tensor([0.5039, 0.8181, 0.4588])
-tensor([0.5039, 0.8181, 0.4587])
-tensor([0.5039, 0.8181, 0.4587])
-tensor([0.5039, 0.8181, 0.4586])
-tensor([0.5039, 0.8181, 0.4586])
-tensor([0.5039, 0.8181, 0.4585])
-tensor([0.5039, 0.8181, 0.4585])
-tensor([0.5039, 0.8181, 0.4584])
-tensor([0.5039, 0.8181, 0.4584])
-tensor([0.5039, 0.8181, 0.4583])
-tensor([0.5039, 0.8181, 0.4583])
-tensor([0.5039, 0.8181, 0.4582])
-tensor([0.5039, 0.8181, 0.4582])
-tensor([0.5039, 0.8181, 0.4581])
-tensor([0.5039, 0.8181, 0.4581])
-tensor([0.5039, 0.8181, 0.4580])
-tensor([0.5039, 0.8181, 0.4580])
-tensor([0.5039, 0.8181, 0.4579])
-tensor([0.5039, 0.8181, 0.4579])
-tensor([0.5039, 0.8181, 0.4578])
-tensor([0.5039, 0.8181, 0.4578])
-tensor([0.5039, 0.8181, 0.4577])
-tensor([0.5039, 0.8181, 0.4577])
-tensor([0.5039, 0.8181, 0.4576])
-tensor([0.5039, 0.8181, 0.4576])
-tensor([0.5039, 0.8181, 0.4575])
-tensor([0.5039, 0.8181, 0.4575])
-tensor([0.5039, 0.8181, 0.4574])
-tensor([0.5039, 0.8181, 0.4574])
-tensor([0.5039, 0.8181, 0.4573])
-tensor([0.5039, 0.8181, 0.4573])
-tensor([0.5039, 0.8181, 0.4572])
-tensor([0.5039, 0.8181, 0.4572])
-tensor([0.5039, 0.8181, 0.4571])
-tensor([0.5039, 0.8181, 0.4571])
-tensor([0.5039, 0.8181, 0.4570])
-tensor([0.5039, 0.8181, 0.4570])
-tensor([0.5039, 0.8181, 0.4569])
-tensor([0.5039, 0.8181, 0.4569])
-tensor([0.5039, 0.8181, 0.4568])
-tensor([0.5039, 0.8181, 0.4568])
-tensor([0.5039, 0.8181, 0.4567])
-tensor([0.5039, 0.8181, 0.4567])
-tensor([0.5039, 0.8181, 0.4566])
-tensor([0.5039, 0.8181, 0.4566])
-tensor([0.5039, 0.8181, 0.4565])
-tensor([0.5039, 0.8181, 0.4565])
-tensor([0.5039, 0.8181, 0.4564])
-tensor([0.5039, 0.8181, 0.4564])
-tensor([0.5039, 0.8181, 0.4563])
-tensor([0.5039, 0.8181, 0.4563])
-tensor([0.5039, 0.8181, 0.4562])
-tensor([0.5039, 0.8181, 0.4562])
-tensor([0.5039, 0.8181, 0.4561])
-tensor([0.5039, 0.8181, 0.4561])
-tensor([0.5039, 0.8181, 0.4560])
-tensor([0.5039, 0.8181, 0.4560])
-tensor([0.5039, 0.8181, 0.4559])
-tensor([0.5039, 0.8181, 0.4559])
-tensor([0.5039, 0.8181, 0.4558])
-tensor([0.5039, 0.8181, 0.4558])
-tensor([0.5039, 0.8181, 0.4557])
-tensor([0.5039, 0.8181, 0.4557])
-tensor([0.5039, 0.8181, 0.4556])
-tensor([0.5039, 0.8181, 0.4556])
-tensor([0.5039, 0.8181, 0.4555])
-tensor([0.5039, 0.8181, 0.4555])
-tensor([0.5039, 0.8181, 0.4554])
-tensor([0.5039, 0.8181, 0.4554])
-tensor([0.5039, 0.8181, 0.4553])
-tensor([0.5039, 0.8181, 0.4553])
-tensor([0.5039, 0.8181, 0.4552])
-tensor([0.5039, 0.8181, 0.4552])
-tensor([0.5039, 0.8181, 0.4551])
-tensor([0.5039, 0.8181, 0.4551])
-tensor([0.5039, 0.8181, 0.4550])
-tensor([0.5039, 0.8181, 0.4550])
-tensor([0.5039, 0.8181, 0.4549])
-tensor([0.5039, 0.8181, 0.4549])
-tensor([0.5039, 0.8182, 0.4548])
-tensor([0.5039, 0.8182, 0.4548])
-tensor([0.5039, 0.8182, 0.4547])
-tensor([0.5039, 0.8182, 0.4547])
-tensor([0.5039, 0.8182, 0.4546])
-tensor([0.5039, 0.8182, 0.4546])
-tensor([0.5039, 0.8182, 0.4545])
-tensor([0.5039, 0.8182, 0.4545])
-tensor([0.5039, 0.8182, 0.4544])
-tensor([0.5039, 0.8182, 0.4544])
-tensor([0.5039, 0.8182, 0.4543])
-tensor([0.5039, 0.8182, 0.4543])
-tensor([0.5038, 0.8182, 0.4542])
-tensor([0.5038, 0.8182, 0.4542])
-tensor([0.5038, 0.8182, 0.4541])
-tensor([0.5038, 0.8182, 0.4541])
-tensor([0.5038, 0.8182, 0.4540])
-tensor([0.5038, 0.8182, 0.4540])
-tensor([0.5038, 0.8182, 0.4539])
-tensor([0.5038, 0.8182, 0.4539])
-tensor([0.5038, 0.8182, 0.4538])
-tensor([0.5038, 0.8182, 0.4538])
-tensor([0.5038, 0.8182, 0.4537])
-tensor([0.5038, 0.8182, 0.4537])
-tensor([0.5038, 0.8182, 0.4536])
-tensor([0.5038, 0.8182, 0.4536])
-tensor([0.5038, 0.8182, 0.4535])
-tensor([0.5038, 0.8182, 0.4535])
-tensor([0.5038, 0.8182, 0.4534])
-tensor([0.5038, 0.8182, 0.4534])
-tensor([0.5038, 0.8182, 0.4533])
-tensor([0.5038, 0.8182, 0.4533])
-tensor([0.5038, 0.8182, 0.4532])
-tensor([0.5038, 0.8182, 0.4532])
-tensor([0.5038, 0.8182, 0.4531])
-tensor([0.5038, 0.8182, 0.4531])
-tensor([0.5038, 0.8182, 0.4530])
-tensor([0.5038, 0.8182, 0.4530])
-tensor([0.5038, 0.8182, 0.4529])
-tensor([0.5038, 0.8182, 0.4529])
-tensor([0.5038, 0.8182, 0.4528])
-tensor([0.5038, 0.8182, 0.4528])
-tensor([0.5038, 0.8182, 0.4527])
-tensor([0.5038, 0.8182, 0.4527])
-tensor([0.5038, 0.8182, 0.4526])
-tensor([0.5038, 0.8182, 0.4526])
-tensor([0.5038, 0.8182, 0.4525])
-tensor([0.5038, 0.8182, 0.4525])
-tensor([0.5038, 0.8182, 0.4524])
-tensor([0.5038, 0.8182, 0.4524])
-tensor([0.5038, 0.8182, 0.4523])
-tensor([0.5038, 0.8182, 0.4523])
-tensor([0.5038, 0.8182, 0.4522])
-tensor([0.5038, 0.8182, 0.4522])
-tensor([0.5038, 0.8182, 0.4521])
-tensor([0.5038, 0.8182, 0.4521])
-tensor([0.5038, 0.8182, 0.4520])
-tensor([0.5038, 0.8182, 0.4520])
-tensor([0.5038, 0.8182, 0.4519])
-tensor([0.5038, 0.8182, 0.4519])
-tensor([0.5038, 0.8182, 0.4518])
-tensor([0.5038, 0.8182, 0.4518])
-tensor([0.5038, 0.8182, 0.4517])
-tensor([0.5038, 0.8182, 0.4517])
-tensor([0.5038, 0.8182, 0.4516])
-tensor([0.5038, 0.8182, 0.4516])
-tensor([0.5038, 0.8182, 0.4515])
-tensor([0.5038, 0.8182, 0.4515])
-tensor([0.5038, 0.8182, 0.4514])
-tensor([0.5038, 0.8182, 0.4514])
-tensor([0.5038, 0.8182, 0.4513])
-tensor([0.5038, 0.8182, 0.4513])
-tensor([0.5038, 0.8182, 0.4512])
-tensor([0.5038, 0.8182, 0.4512])
-tensor([0.5038, 0.8182, 0.4511])
-tensor([0.5038, 0.8182, 0.4511])
-tensor([0.5038, 0.8182, 0.4510])
-tensor([0.5038, 0.8182, 0.4510])
-tensor([0.5038, 0.8182, 0.4509])
-tensor([0.5038, 0.8182, 0.4509])
-tensor([0.5038, 0.8182, 0.4508])
-tensor([0.5038, 0.8182, 0.4508])
-tensor([0.5038, 0.8182, 0.4507])
-tensor([0.5038, 0.8182, 0.4507])
-tensor([0.5038, 0.8182, 0.4506])
-tensor([0.5038, 0.8182, 0.4506])
-tensor([0.5038, 0.8182, 0.4505])
-tensor([0.5038, 0.8182, 0.4505])
-tensor([0.5038, 0.8182, 0.4504])
-tensor([0.5038, 0.8182, 0.4504])
-tensor([0.5038, 0.8182, 0.4503])
-tensor([0.5038, 0.8182, 0.4503])
-tensor([0.5038, 0.8182, 0.4502])
-tensor([0.5038, 0.8182, 0.4502])
-tensor([0.5038, 0.8182, 0.4501])
-tensor([0.5038, 0.8182, 0.4501])
-tensor([0.5038, 0.8182, 0.4500])
-tensor([0.5038, 0.8182, 0.4500])
-tensor([0.5038, 0.8182, 0.4499])
-tensor([0.5038, 0.8182, 0.4499])
-tensor([0.5038, 0.8182, 0.4498])
-tensor([0.5038, 0.8182, 0.4498])
-tensor([0.5038, 0.8182, 0.4497])
-tensor([0.5038, 0.8182, 0.4497])
-tensor([0.5038, 0.8182, 0.4496])
-tensor([0.5038, 0.8182, 0.4496])
-tensor([0.5038, 0.8182, 0.4495])
-tensor([0.5038, 0.8182, 0.4495])
-tensor([0.5038, 0.8182, 0.4494])
-tensor([0.5038, 0.8182, 0.4494])
-tensor([0.5038, 0.8182, 0.4493])
-tensor([0.5038, 0.8182, 0.4493])
-tensor([0.5038, 0.8182, 0.4492])
-tensor([0.5038, 0.8182, 0.4492])
-tensor([0.5038, 0.8182, 0.4491])
-tensor([0.5038, 0.8182, 0.4491])
-tensor([0.5038, 0.8182, 0.4490])
-tensor([0.5038, 0.8182, 0.4490])
-tensor([0.5038, 0.8182, 0.4489])
-tensor([0.5038, 0.8182, 0.4489])
-tensor([0.5038, 0.8182, 0.4488])
-tensor([0.5038, 0.8182, 0.4488])
-tensor([0.5038, 0.8182, 0.4487])
-tensor([0.5038, 0.8182, 0.4487])
-tensor([0.5038, 0.8182, 0.4486])
-tensor([0.5038, 0.8182, 0.4486])
-tensor([0.5038, 0.8182, 0.4485])
-tensor([0.5038, 0.8182, 0.4485])
-tensor([0.5038, 0.8182, 0.4484])
-tensor([0.5038, 0.8182, 0.4484])
-tensor([0.5038, 0.8182, 0.4483])
-tensor([0.5038, 0.8182, 0.4483])
-tensor([0.5037, 0.8182, 0.4482])
-tensor([0.5037, 0.8182, 0.4482])
-tensor([0.5037, 0.8182, 0.4481])
-tensor([0.5037, 0.8182, 0.4481])
-tensor([0.5037, 0.8182, 0.4480])
-tensor([0.5037, 0.8182, 0.4480])
-tensor([0.5037, 0.8182, 0.4479])
-tensor([0.5037, 0.8182, 0.4479])
-tensor([0.5037, 0.8183, 0.4478])
-tensor([0.5037, 0.8183, 0.4478])
-tensor([0.5037, 0.8183, 0.4477])
-tensor([0.5037, 0.8183, 0.4477])
-tensor([0.5037, 0.8183, 0.4476])
-tensor([0.5037, 0.8183, 0.4476])
-tensor([0.5037, 0.8183, 0.4475])
-tensor([0.5037, 0.8183, 0.4475])
-tensor([0.5037, 0.8183, 0.4474])
-tensor([0.5037, 0.8183, 0.4474])
-tensor([0.5037, 0.8183, 0.4473])
-tensor([0.5037, 0.8183, 0.4473])
-tensor([0.5037, 0.8183, 0.4472])
-tensor([0.5037, 0.8183, 0.4472])
-tensor([0.5037, 0.8183, 0.4471])
-tensor([0.5037, 0.8183, 0.4471])
-tensor([0.5037, 0.8183, 0.4470])
-tensor([0.5037, 0.8183, 0.4470])
-tensor([0.5037, 0.8183, 0.4469])
-tensor([0.5037, 0.8183, 0.4469])
-tensor([0.5037, 0.8183, 0.4468])
-tensor([0.5037, 0.8183, 0.4468])
-tensor([0.5037, 0.8183, 0.4467])
-tensor([0.5037, 0.8183, 0.4467])
-tensor([0.5037, 0.8183, 0.4466])
-tensor([0.5037, 0.8183, 0.4466])
-tensor([0.5037, 0.8183, 0.4465])
-tensor([0.5037, 0.8183, 0.4465])
-tensor([0.5037, 0.8183, 0.4464])
-tensor([0.5037, 0.8183, 0.4464])
-tensor([0.5037, 0.8183, 0.4463])
-tensor([0.5037, 0.8183, 0.4463])
-tensor([0.5037, 0.8183, 0.4462])
-tensor([0.5037, 0.8183, 0.4462])
-tensor([0.5037, 0.8183, 0.4461])
-tensor([0.5037, 0.8183, 0.4461])
-tensor([0.5037, 0.8183, 0.4460])
-tensor([0.5037, 0.8183, 0.4460])
-tensor([0.5037, 0.8183, 0.4459])
-tensor([0.5037, 0.8183, 0.4459])
-tensor([0.5037, 0.8183, 0.4458])
-tensor([0.5037, 0.8183, 0.4458])
-tensor([0.5037, 0.8183, 0.4457])
-tensor([0.5037, 0.8183, 0.4457])
-tensor([0.5037, 0.8183, 0.4456])
-tensor([0.5037, 0.8183, 0.4456])
-tensor([0.5037, 0.8183, 0.4455])
-tensor([0.5037, 0.8183, 0.4455])
-tensor([0.5037, 0.8183, 0.4454])
-tensor([0.5037, 0.8183, 0.4454])
-tensor([0.5037, 0.8183, 0.4453])
-tensor([0.5037, 0.8183, 0.4453])
-tensor([0.5037, 0.8183, 0.4452])
-tensor([0.5037, 0.8183, 0.4452])
-tensor([0.5037, 0.8183, 0.4451])
-tensor([0.5037, 0.8183, 0.4451])
-tensor([0.5037, 0.8183, 0.4450])
-tensor([0.5037, 0.8183, 0.4450])
-tensor([0.5037, 0.8183, 0.4449])
-tensor([0.5037, 0.8183, 0.4449])
-tensor([0.5037, 0.8183, 0.4448])
-tensor([0.5037, 0.8183, 0.4448])
-tensor([0.5037, 0.8183, 0.4447])
-tensor([0.5037, 0.8183, 0.4447])
-tensor([0.5037, 0.8183, 0.4446])
-tensor([0.5037, 0.8183, 0.4446])
-tensor([0.5037, 0.8183, 0.4445])
-tensor([0.5037, 0.8183, 0.4445])
-tensor([0.5037, 0.8183, 0.4444])
-tensor([0.5037, 0.8183, 0.4444])
-tensor([0.5037, 0.8183, 0.4443])
-tensor([0.5037, 0.8183, 0.4443])
-tensor([0.5037, 0.8183, 0.4442])
-tensor([0.5037, 0.8183, 0.4442])
-tensor([0.5037, 0.8183, 0.4441])
-tensor([0.5037, 0.8183, 0.4441])
-tensor([0.5037, 0.8183, 0.4440])
-tensor([0.5037, 0.8183, 0.4440])
-tensor([0.5037, 0.8183, 0.4439])
-tensor([0.5037, 0.8183, 0.4439])
-tensor([0.5037, 0.8183, 0.4438])
-tensor([0.5037, 0.8183, 0.4438])
-tensor([0.5037, 0.8183, 0.4437])
-tensor([0.5037, 0.8183, 0.4437])
-tensor([0.5037, 0.8183, 0.4436])
-tensor([0.5037, 0.8183, 0.4436])
-tensor([0.5037, 0.8183, 0.4435])
-tensor([0.5037, 0.8183, 0.4435])
-tensor([0.5037, 0.8183, 0.4434])
-tensor([0.5037, 0.8183, 0.4434])
-tensor([0.5037, 0.8183, 0.4433])
-tensor([0.5037, 0.8183, 0.4433])
-tensor([0.5037, 0.8183, 0.4432])
-tensor([0.5037, 0.8183, 0.4432])
-tensor([0.5037, 0.8183, 0.4431])
-tensor([0.5037, 0.8183, 0.4431])
-tensor([0.5037, 0.8183, 0.4430])
-tensor([0.5037, 0.8183, 0.4430])
-tensor([0.5037, 0.8183, 0.4429])
-tensor([0.5037, 0.8183, 0.4429])
-tensor([0.5037, 0.8183, 0.4428])
-tensor([0.5037, 0.8183, 0.4428])
-tensor([0.5037, 0.8183, 0.4427])
-tensor([0.5037, 0.8183, 0.4427])
-tensor([0.5037, 0.8183, 0.4426])
-tensor([0.5037, 0.8183, 0.4426])
-tensor([0.5037, 0.8183, 0.4425])
-tensor([0.5037, 0.8183, 0.4425])
-tensor([0.5037, 0.8183, 0.4424])
-tensor([0.5036, 0.8183, 0.4424])
-tensor([0.5036, 0.8183, 0.4423])
-tensor([0.5036, 0.8183, 0.4423])
-tensor([0.5036, 0.8183, 0.4422])
-tensor([0.5036, 0.8183, 0.4422])
-tensor([0.5036, 0.8183, 0.4421])
-tensor([0.5036, 0.8183, 0.4421])
-tensor([0.5036, 0.8183, 0.4420])
-tensor([0.5036, 0.8183, 0.4420])
-tensor([0.5036, 0.8183, 0.4419])
-tensor([0.5036, 0.8183, 0.4419])
-tensor([0.5036, 0.8183, 0.4418])
-tensor([0.5036, 0.8183, 0.4418])
-tensor([0.5036, 0.8183, 0.4417])
-tensor([0.5036, 0.8183, 0.4417])
-tensor([0.5036, 0.8183, 0.4416])
-tensor([0.5036, 0.8183, 0.4416])
-tensor([0.5036, 0.8183, 0.4415])
-tensor([0.5036, 0.8183, 0.4415])
-tensor([0.5036, 0.8183, 0.4414])
-tensor([0.5036, 0.8183, 0.4414])
-tensor([0.5036, 0.8183, 0.4413])
-tensor([0.5036, 0.8183, 0.4413])
-tensor([0.5036, 0.8183, 0.4412])
-tensor([0.5036, 0.8183, 0.4412])
-tensor([0.5036, 0.8183, 0.4411])
-tensor([0.5036, 0.8183, 0.4411])
-tensor([0.5036, 0.8183, 0.4410])
-tensor([0.5036, 0.8183, 0.4410])
-tensor([0.5036, 0.8183, 0.4409])
-tensor([0.5036, 0.8183, 0.4409])
-tensor([0.5036, 0.8183, 0.4408])
-tensor([0.5036, 0.8183, 0.4408])
-tensor([0.5036, 0.8183, 0.4407])
-tensor([0.5036, 0.8183, 0.4407])
-tensor([0.5036, 0.8183, 0.4406])
-tensor([0.5036, 0.8183, 0.4406])
-tensor([0.5036, 0.8183, 0.4405])
-tensor([0.5036, 0.8183, 0.4405])
-tensor([0.5036, 0.8183, 0.4404])
-tensor([0.5036, 0.8183, 0.4404])
-tensor([0.5036, 0.8183, 0.4403])
-tensor([0.5036, 0.8183, 0.4403])
-tensor([0.5036, 0.8183, 0.4402])
-tensor([0.5036, 0.8184, 0.4402])
-tensor([0.5036, 0.8184, 0.4401])
-tensor([0.5036, 0.8184, 0.4401])
-tensor([0.5036, 0.8184, 0.4400])
-tensor([0.5036, 0.8184, 0.4400])
-tensor([0.5036, 0.8184, 0.4399])
-tensor([0.5036, 0.8184, 0.4399])
-tensor([0.5036, 0.8184, 0.4398])
-tensor([0.5036, 0.8184, 0.4398])
-tensor([0.5036, 0.8184, 0.4397])
-tensor([0.5036, 0.8184, 0.4397])
-tensor([0.5036, 0.8184, 0.4396])
-tensor([0.5036, 0.8184, 0.4396])
-tensor([0.5036, 0.8184, 0.4395])
-tensor([0.5036, 0.8184, 0.4395])
-tensor([0.5036, 0.8184, 0.4394])
-tensor([0.5036, 0.8184, 0.4394])
-tensor([0.5036, 0.8184, 0.4393])
-tensor([0.5036, 0.8184, 0.4393])
-tensor([0.5036, 0.8184, 0.4392])
-tensor([0.5036, 0.8184, 0.4392])
-tensor([0.5036, 0.8184, 0.4391])
-tensor([0.5036, 0.8184, 0.4391])
-tensor([0.5036, 0.8184, 0.4390])
-tensor([0.5036, 0.8184, 0.4390])
-tensor([0.5036, 0.8184, 0.4389])
-tensor([0.5036, 0.8184, 0.4389])
-tensor([0.5036, 0.8184, 0.4388])
-tensor([0.5036, 0.8184, 0.4388])
-tensor([0.5036, 0.8184, 0.4387])
-tensor([0.5036, 0.8184, 0.4387])
-tensor([0.5036, 0.8184, 0.4386])
-tensor([0.5036, 0.8184, 0.4386])
-tensor([0.5036, 0.8184, 0.4385])
-tensor([0.5036, 0.8184, 0.4385])
-tensor([0.5036, 0.8184, 0.4384])
-tensor([0.5036, 0.8184, 0.4384])
-tensor([0.5036, 0.8184, 0.4383])
-tensor([0.5036, 0.8184, 0.4383])
-tensor([0.5036, 0.8184, 0.4382])
-tensor([0.5036, 0.8184, 0.4382])
-tensor([0.5036, 0.8184, 0.4381])
-tensor([0.5036, 0.8184, 0.4381])
-tensor([0.5036, 0.8184, 0.4381])
-tensor([0.5036, 0.8184, 0.4380])
-tensor([0.5036, 0.8184, 0.4380])
-tensor([0.5036, 0.8184, 0.4379])
-tensor([0.5036, 0.8184, 0.4379])
-tensor([0.5036, 0.8184, 0.4378])
-tensor([0.5036, 0.8184, 0.4378])
-tensor([0.5036, 0.8184, 0.4377])
-tensor([0.5036, 0.8184, 0.4377])
-tensor([0.5036, 0.8184, 0.4376])
-tensor([0.5036, 0.8184, 0.4376])
-tensor([0.5036, 0.8184, 0.4375])
-tensor([0.5036, 0.8184, 0.4375])
-tensor([0.5036, 0.8184, 0.4374])
-tensor([0.5036, 0.8184, 0.4374])
-tensor([0.5036, 0.8184, 0.4373])
-tensor([0.5036, 0.8184, 0.4373])
-tensor([0.5036, 0.8184, 0.4372])
-tensor([0.5036, 0.8184, 0.4372])
-tensor([0.5036, 0.8184, 0.4371])
-tensor([0.5036, 0.8184, 0.4371])
-tensor([0.5036, 0.8184, 0.4370])
-tensor([0.5036, 0.8184, 0.4370])
-tensor([0.5036, 0.8184, 0.4369])
-tensor([0.5036, 0.8184, 0.4369])
-tensor([0.5035, 0.8184, 0.4368])
-tensor([0.5035, 0.8184, 0.4368])
-tensor([0.5035, 0.8184, 0.4367])
-tensor([0.5035, 0.8184, 0.4367])
-tensor([0.5035, 0.8184, 0.4366])
-tensor([0.5035, 0.8184, 0.4366])
-tensor([0.5035, 0.8184, 0.4365])
-tensor([0.5035, 0.8184, 0.4365])
-tensor([0.5035, 0.8184, 0.4364])
-tensor([0.5035, 0.8184, 0.4364])
-tensor([0.5035, 0.8184, 0.4363])
-tensor([0.5035, 0.8184, 0.4363])
-tensor([0.5035, 0.8184, 0.4362])
-tensor([0.5035, 0.8184, 0.4362])
-tensor([0.5035, 0.8184, 0.4361])
-tensor([0.5035, 0.8184, 0.4361])
-tensor([0.5035, 0.8184, 0.4360])
-tensor([0.5035, 0.8184, 0.4360])
-tensor([0.5035, 0.8184, 0.4359])
-tensor([0.5035, 0.8184, 0.4359])
-tensor([0.5035, 0.8184, 0.4358])
-tensor([0.5035, 0.8184, 0.4358])
-tensor([0.5035, 0.8184, 0.4357])
-tensor([0.5035, 0.8184, 0.4357])
-tensor([0.5035, 0.8184, 0.4356])
-tensor([0.5035, 0.8184, 0.4356])
-tensor([0.5035, 0.8184, 0.4355])
-tensor([0.5035, 0.8184, 0.4355])
-tensor([0.5035, 0.8184, 0.4354])
-tensor([0.5035, 0.8184, 0.4354])
-tensor([0.5035, 0.8184, 0.4353])
-tensor([0.5035, 0.8184, 0.4353])
-tensor([0.5035, 0.8184, 0.4352])
-tensor([0.5035, 0.8184, 0.4352])
-tensor([0.5035, 0.8184, 0.4351])
-tensor([0.5035, 0.8184, 0.4351])
-tensor([0.5035, 0.8184, 0.4350])
-tensor([0.5035, 0.8184, 0.4350])
-tensor([0.5035, 0.8184, 0.4349])
-tensor([0.5035, 0.8184, 0.4349])
-tensor([0.5035, 0.8184, 0.4348])
-tensor([0.5035, 0.8184, 0.4348])
-tensor([0.5035, 0.8184, 0.4347])
-tensor([0.5035, 0.8184, 0.4347])
-tensor([0.5035, 0.8184, 0.4346])
-tensor([0.5035, 0.8184, 0.4346])
-tensor([0.5035, 0.8184, 0.4345])
-tensor([0.5035, 0.8184, 0.4345])
-tensor([0.5035, 0.8184, 0.4344])
-tensor([0.5035, 0.8184, 0.4344])
-tensor([0.5035, 0.8184, 0.4343])
-tensor([0.5035, 0.8184, 0.4343])
-tensor([0.5035, 0.8184, 0.4342])
-tensor([0.5035, 0.8184, 0.4342])
-tensor([0.5035, 0.8184, 0.4341])
-tensor([0.5035, 0.8184, 0.4341])
-tensor([0.5035, 0.8184, 0.4340])
-tensor([0.5035, 0.8184, 0.4340])
-tensor([0.5035, 0.8184, 0.4340])
-tensor([0.5035, 0.8184, 0.4339])
-tensor([0.5035, 0.8184, 0.4339])
-tensor([0.5035, 0.8184, 0.4338])
-tensor([0.5035, 0.8184, 0.4338])
-tensor([0.5035, 0.8184, 0.4337])
-tensor([0.5035, 0.8184, 0.4337])
-tensor([0.5035, 0.8184, 0.4336])
-tensor([0.5035, 0.8184, 0.4336])
-tensor([0.5035, 0.8184, 0.4335])
-tensor([0.5035, 0.8184, 0.4335])
-tensor([0.5035, 0.8184, 0.4334])
-tensor([0.5035, 0.8184, 0.4334])
-tensor([0.5035, 0.8184, 0.4333])
-tensor([0.5035, 0.8184, 0.4333])
-tensor([0.5035, 0.8184, 0.4332])
-tensor([0.5035, 0.8184, 0.4332])
-tensor([0.5035, 0.8184, 0.4331])
-tensor([0.5035, 0.8184, 0.4331])
-tensor([0.5035, 0.8184, 0.4330])
-tensor([0.5035, 0.8184, 0.4330])
-tensor([0.5035, 0.8184, 0.4329])
-tensor([0.5035, 0.8184, 0.4329])
-tensor([0.5035, 0.8184, 0.4328])
-tensor([0.5035, 0.8184, 0.4328])
-tensor([0.5035, 0.8184, 0.4327])
-tensor([0.5035, 0.8184, 0.4327])
-tensor([0.5035, 0.8184, 0.4326])
-tensor([0.5035, 0.8184, 0.4326])
-tensor([0.5035, 0.8184, 0.4325])
-tensor([0.5035, 0.8184, 0.4325])
-tensor([0.5035, 0.8184, 0.4324])
-tensor([0.5035, 0.8184, 0.4324])
-tensor([0.5035, 0.8184, 0.4323])
-tensor([0.5035, 0.8184, 0.4323])
-tensor([0.5035, 0.8184, 0.4322])
-tensor([0.5035, 0.8184, 0.4322])
-tensor([0.5035, 0.8184, 0.4321])
-tensor([0.5035, 0.8184, 0.4321])
-tensor([0.5035, 0.8184, 0.4320])
-tensor([0.5035, 0.8184, 0.4320])
-tensor([0.5035, 0.8184, 0.4319])
-tensor([0.5035, 0.8184, 0.4319])
-tensor([0.5035, 0.8184, 0.4318])
-tensor([0.5035, 0.8184, 0.4318])
-tensor([0.5035, 0.8184, 0.4317])
-tensor([0.5034, 0.8184, 0.4317])
-tensor([0.5034, 0.8184, 0.4316])
-tensor([0.5034, 0.8184, 0.4316])
-tensor([0.5034, 0.8184, 0.4316])
-tensor([0.5034, 0.8184, 0.4315])
-tensor([0.5034, 0.8184, 0.4315])
-tensor([0.5034, 0.8184, 0.4314])
-tensor([0.5034, 0.8184, 0.4314])
-tensor([0.5034, 0.8184, 0.4313])
-tensor([0.5034, 0.8184, 0.4313])
-tensor([0.5034, 0.8184, 0.4312])
-tensor([0.5034, 0.8184, 0.4312])
-tensor([0.5034, 0.8184, 0.4311])
-tensor([0.5034, 0.8184, 0.4311])
-tensor([0.5034, 0.8184, 0.4310])
-tensor([0.5034, 0.8184, 0.4310])
-tensor([0.5034, 0.8184, 0.4309])
-tensor([0.5034, 0.8184, 0.4309])
-tensor([0.5034, 0.8184, 0.4308])
-tensor([0.5034, 0.8184, 0.4308])
-tensor([0.5034, 0.8184, 0.4307])
-tensor([0.5034, 0.8184, 0.4307])
-tensor([0.5034, 0.8184, 0.4306])
-tensor([0.5034, 0.8184, 0.4306])
-tensor([0.5034, 0.8184, 0.4305])
-tensor([0.5034, 0.8184, 0.4305])
-tensor([0.5034, 0.8184, 0.4304])
-tensor([0.5034, 0.8184, 0.4304])
-tensor([0.5034, 0.8184, 0.4303])
-tensor([0.5034, 0.8184, 0.4303])
-tensor([0.5034, 0.8184, 0.4302])
-tensor([0.5034, 0.8184, 0.4302])
-tensor([0.5034, 0.8184, 0.4301])
-tensor([0.5034, 0.8184, 0.4301])
-tensor([0.5034, 0.8184, 0.4300])
-tensor([0.5034, 0.8184, 0.4300])
-tensor([0.5034, 0.8184, 0.4299])</code></pre>
-</div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="perceptron_blog_files/figure-html/cell-17-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="perceptron_blog_files/figure-html/cell-17-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
