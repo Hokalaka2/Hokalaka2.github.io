@@ -77,7 +77,7 @@ class PerceptronOptimizer:
 
     def __init__(self, model, alpha):
         self.model = model
-        self.model.alpha = alpha
+        self.alpha = alpha
     
     def step(self, X, y, k = 1):
         """
@@ -85,5 +85,5 @@ class PerceptronOptimizer:
         and target vector y. 
         """
         loss = self.model.loss(X, y)
-        self.model.w += (self.model.alpha / k) * self.model.grad(X, y)
+        self.model.w += (self.alpha / k) * self.model.grad(X, y)
         return loss
