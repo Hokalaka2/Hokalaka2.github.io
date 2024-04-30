@@ -70,7 +70,7 @@ class Perceptron(LinearModel):
         s = self.score(X)
         mult = y.T * s
         matrix = torch.where(mult < 0, y, 0.0)
-        return matrix @ X
+        return matrix@X
     
 
 class PerceptronOptimizer:
